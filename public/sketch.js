@@ -14,11 +14,19 @@ let poses = [];
 let	holeScale = 100;
 let holePose;
 
-function getHoleInScreen() {
+let testHolePose1;
+let testHolePose2;
+
+function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
 		.then(resp => resp.json())
 		.then(data => {
+      console.log("got data");
 			holePose = data.pose1;
+
+      testHolePose1 = data.pose1;
+      testHolePose2 = data.pose2;
+      completion()
 		});
 }
 
@@ -43,8 +51,13 @@ function setup() {
 		}
   });
   // Hide the video element, and just show the canvas
-	getHoleInScreen();
+	getHoleInScreen(function(){
+    console.log(compareTwoNormalizedPoses(normalizePose(testHolePose1), normalizePose(testHolePose2)))
+  });
   video.hide();
+
+
+
 }
 
 function modelReady() {
@@ -87,6 +100,7 @@ function drawSkeleton() {
     for (let j = 0; j < skeleton.length; j++) {
       let partA = skeleton[j][0];
       let partB = skeleton[j][1];
+      strokeWeight(2);
       stroke(255, 0, 0);
       line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
     }
