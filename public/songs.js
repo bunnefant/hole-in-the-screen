@@ -1,7 +1,7 @@
 const host = "http://localhost:8000"
 function getSongDataForGame(){
   // return a list of poses and time stamps
-  var songFilePath = "songs/BangarangSkrillex.mp3"
+  var songFilePath = "songs/BarbieGirl.mp3"
   var choices = Object.keys(allPoses)
   console.log(choices)
   var poses = []
