@@ -21,20 +21,61 @@ function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
 		.then(resp => resp.json())
 		.then(data => {
-			holePose = data.pose1.skeleton;
+			holePose = data.pose1;
 		});
 }
 
 
 function drawHoleInScreen() {
   // Loop through all the skeletons detected
-   for (let j = 0; j < holePose.length; j++) {
-     let partA = holePose[j][0];
-     let partB = holePose[j][1];
-		 strokeWeight(10);
-     stroke(255, 0, 0);
+	 let skeleton = holePose.skeleton ? holePose.skeleton : [];
+	 if (skeleton.length == 0) {
+	   return;
+	 }
+	 fill(255, 0, 0, 100);
+	 //rect(0, 0, 640, 480);
+	 let torso = {};
+   for (let j = 0; j < skeleton.length; j++) {
+     let partA = skeleton[j][0];
+     let partB = skeleton[j][1];
+		 //note down coordinates for torso while looping thorugh skeleton
+		 if (partA.part == 'leftHip' && partB.part == 'leftShoulder') {
+		   torso.leftShoulder = partB.position;
+			 continue;
+		 }
+		 if (partA.part == 'rightHip' && partB.part == 'rightShoulder') {
+		   torso.rightHip = partA.position;
+			 continue;
+		 }
+		 if (partA.part == 'leftShoulder' && partB.part == 'rightShoulder') {
+		   torso.rightShoulder = partB.position;
+			 continue;
+		 }
+		 if (partA.part == 'leftHip' && partB.part == 'rightHip') {
+		   torso.leftHip = partA.position;
+			 continue;
+		 }
+		 //draw limbs
+		 strokeWeight(20);
+	   stroke(255, 0, 0, 100);
      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
    }
+	 //draw torso polygon
+	 noStroke();
+	 beginShape();
+	 vertex(torso.leftShoulder.x, torso.leftShoulder.y);
+	 vertex(torso.rightShoulder.x, torso.rightShoulder.y);
+	 vertex(torso.rightHip.x, torso.rightHip.y);
+	 vertex(torso.leftHip.x, torso.leftHip.y);
+	 endShape(CLOSE);
+	 
+	 //draw head
+	 let leftEar = holePose.pose.leftEar;
+	 let rightEar = holePose.pose.rightEar;
+
+	 let nose = holePose.pose.nose;
+	 let diameter = Math.sqrt((leftEar.x - rightEar.x)**2 + (leftEar.y - rightEar.y)**2);
+	 circle(nose.x, nose.y, diameter);
 }
 
 function setup() {
@@ -75,7 +116,7 @@ function draw() {
   image(video, 0, 0, width, height);
 
   // We can call both functions to draw all keypoints and the skeletons
-	// drawHoleInScreen();
+	drawHoleInScreen();
   drawKeypoints();
   drawSkeleton();
 }
