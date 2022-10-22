@@ -14,6 +14,9 @@ let poses = [];
 let	holeScale = 100;
 let holePose = [];
 
+var poseUpdatedCallbacks = []
+var drawCallbacks = []
+
 let testHolePose1;
 let testHolePose2;
 
@@ -22,6 +25,10 @@ function getHoleInScreen(completion) {
 		.then(resp => resp.json())
 		.then(data => {
 			holePose = data.pose1;
+
+      testHolePose1 = data.pose1.pose;
+      // testHolePose2 = data.pose2.pose;
+      completion();
 		});
 }
 
@@ -90,13 +97,18 @@ function setup() {
   // with an array every time new poses are detected
   poseNet.on('pose', function(results) {
     poses = results;
+
+    for(var i = 0; i < poseUpdatedCallbacks.length; i++){
+      poseUpdatedCallbacks[i](poses);
+    }
+
 		if (poses.length == 2) {
 			console.log(poses);
 		}
   });
   // Hide the video element, and just show the canvas
 	getHoleInScreen(function(){
-    console.log(compareTwoNormalizedPoses(normalizePose(testHolePose1), normalizePose(testHolePose2)))
+    // console.log(compareTwoNormalizedPoses(normalizePose(testHolePose1.keypoints), normalizePose(testHolePose2.keypoints)))
   });
   video.hide();
   moveCanvasToChild();
@@ -119,6 +131,10 @@ function draw() {
 	drawHoleInScreen();
   drawKeypoints();
   drawSkeleton();
+
+  for(var i = 0; i < drawCallbacks.length; i++){
+    drawCallbacks[i]();
+  }
 }
 
 // A function to draw ellipses over the detected keypoints
