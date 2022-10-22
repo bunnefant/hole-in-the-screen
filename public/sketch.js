@@ -16,7 +16,6 @@ let holePose = [];
 let playerCenter = [0, 0];
 let poseHoleCenter = [0, 0];
 let poseTranslation = [0,0];
-let translatedPoseSkeleton = [];
 let posePlayerScale = 1.0;
 
 var allPoses = {}
@@ -39,10 +38,11 @@ function getHoleInScreen(completion) {
 		});
 }
 
-function drawHoleInScreen() {
+function drawHoleInScreen(translated) {
 
+  console.log(translated)
   // Loop through all the skeletons detected
-	 let skeleton = translatedPoseSkeleton;
+	 let skeleton = translated;
 	 if (skeleton.length == 0) {
 	   return;
 	 }
@@ -113,11 +113,6 @@ function setup() {
     for(var i = 0; i < poseUpdatedCallbacks.length; i++){
       poseUpdatedCallbacks[i](poses);
     }
-
-		if (poses.length > 0) {
-			//console.log(poses);
-		  poseTranslation = calcSkeletonTranslation(poses[0].pose, holePose.pose, holePose.skeleton);
-		}
   });
   // Hide the video element, and just show the canvas
 	getHoleInScreen(function(){
@@ -135,8 +130,8 @@ function calcSkeletonTranslation(player, pose, skeleton) {
 			return;
 		}
 
-		console.log(playerCenter);
-		console.log(poseHoleCenter);
+		// console.log(playerCenter);
+		// console.log(poseHoleCenter);
 		let xTrans = playerCenter[0] - poseHoleCenter[0];
 		let yTrans = playerCenter[1] - poseHoleCenter[1];
 		
@@ -144,7 +139,7 @@ function calcSkeletonTranslation(player, pose, skeleton) {
 		let poseCenterDist = euclidDist(poseHoleCenter[0], poseHoleCenter[1], pose.rightShoulder.x, pose.rightShoulder.y);
 		posePlayerScale = playerCenterDist/poseCenterDist;
 
-		translatedPoseSkeleton = [];
+		var translatedPoseSkeleton = [];
 		for (let j = 0; j < skeleton.length; j++) {
 
 			let pointA = skeleton[j][0].position;
@@ -175,7 +170,9 @@ function calcSkeletonTranslation(player, pose, skeleton) {
 				}
 			]);
 		}
+    return translatedPoseSkeleton;
 	}
+  return null;
 }
 
 function lineIntersection(pointA, pointB, pointC, pointD) {
@@ -224,13 +221,14 @@ function draw() {
   image(video, 0, 0, width, height);
 
   // We can call both functions to draw all keypoints and the skeletons
-	drawHoleInScreen();
-  drawKeypoints();
-  drawSkeleton();
-
+	// drawHoleInScreen();
   for(var i = 0; i < drawCallbacks.length; i++){
     drawCallbacks[i]();
   }
+  drawKeypoints();
+  drawSkeleton();
+
+  
 }
 
 // A function to draw ellipses over the detected keypoints

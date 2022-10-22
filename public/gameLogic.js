@@ -25,6 +25,9 @@ var screenshotData = []
 var leftPose;
 var rightPose;
 
+var leftTrans;
+var rightTrans;
+
 var scoreLeft = 0;
 var scoreRight = 0;
 
@@ -66,7 +69,14 @@ function updatedPoseSingleplayer(poses){
   var pose1 = poses[0].pose
 
   leftPose = pose1;
-  // console.log("udpated singleplayer "+pose1.score)
+  // console.log("udpated singleplayer "+JSON.stringify(leftPose))
+
+  var holePoseName = songPosesToShow[currentHoleIndex].pose;
+  // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+  var holePose = allPoses[holePoseName]
+  leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
+
+  
 
   var poseValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD;
   if(!poseValid){
@@ -112,6 +122,7 @@ function updatedPoseMultiplayer(poses){
   var testPose1 = poses[0].pose
   var testPose2 = poses[1].pose
 
+
   var p1X = xAverageofPoints(testPose1)
   var p2X = xAverageofPoints(testPose2)
 
@@ -121,6 +132,13 @@ function updatedPoseMultiplayer(poses){
   leftPose = pose1;
   rightPose = pose2;
 
+  var holePoseName = songPosesToShow[currentHoleIndex].pose;
+  // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+  var holePose = allPoses[holePoseName]
+
+  leftTrans = calcSkeletonTranslation(leftPose.pose, holePose.pose, holePose.skeleton)
+  rightTrans = calcSkeletonTranslation(rightPose.pose, holePose.pose, holePose.skeleton)
+
   var bothPosesValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD && pose2.score > POSE_ACCEPTANCE_THRESHOLD;
   if(!bothPosesValid){
     return
@@ -128,6 +146,7 @@ function updatedPoseMultiplayer(poses){
   var player1Ready = checkHandsAboveHead(pose1)
   var player2Ready = checkHandsAboveHead(pose2)
   
+  console.log("R1 "+player1Ready +" R2"+player2Ready)
   if(!(player1Ready && player2Ready)){
     return
   }
@@ -218,6 +237,16 @@ function drawGame(){
   }
 
   if(gameStarted && !gameEnded){
+    if(leftTrans != null){
+      // console.log("draw left hole")
+      drawHoleInScreen(leftTrans)
+    }
+    if(rightTrans != null){
+      // console.log("draw right hole")
+      drawHoleInScreen(rightTrans)
+    }
+
+
     drawScoreText(leftPose, scoreLeft)
     if(isMultiplayer){
       drawScoreText(rightPose, scoreRight)
