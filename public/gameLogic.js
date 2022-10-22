@@ -37,6 +37,15 @@ var scoreRight = 0;
 
 var bGenerateNewHole = false;
 
+var leftColR = 255
+var leftColG = 0
+var leftColB = 0
+
+var rightColR = 0
+var rightColG = 0
+var rightColB = 255
+
+
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -287,7 +296,7 @@ function drawInverted(){
   if(pose1 != undefined){
     if(pose1.skeleton != undefined){
       // console.log("skele 1"+JSON.stringify(pose1.skeleton))
-      drawPose(pose1.skeleton, 10, 255, 10, 10)
+      drawPose(pose1.skeleton, 10, leftColR, leftColG, leftColB)
 
     }
   }
@@ -295,7 +304,7 @@ function drawInverted(){
     if(pose2.skeleton != undefined){
       // console.log("skele 2"+JSON.stringify(pose2.skeleton))
 
-      drawPose(pose2.skeleton, 20, 10, 10, 255)
+      drawPose(pose2.skeleton, 20, rightColR, rightColG, rightColB)
 
     }
   }
@@ -303,11 +312,11 @@ function drawInverted(){
   if(gameStarted && !gameEnded){
     if(leftTrans != null){
       // console.log("draw left hole")
-      drawHoleInScreen(leftTrans, leftPose, 255, 0, 0)
+      drawHoleInScreen(leftTrans, leftPose, leftColR, leftColG, leftColB)
     }
     if(rightTrans != null){
       // console.log("draw right hole")
-      drawHoleInScreen(rightTrans, rightPose, 0, 0, 255)
+      drawHoleInScreen(rightTrans, rightPose, rightColR, rightColG, rightColB)
     }
   }
 }
@@ -348,9 +357,9 @@ function drawGame(){
     // }
 
 
-    drawScoreText(leftPose, scoreLeft)
+    drawScoreText(leftPose, scoreLeft, leftColR, leftColG, leftColB)
     if(isMultiplayer){
-      drawScoreText(rightPose, scoreRight)
+      drawScoreText(rightPose, scoreRight, rightColR, rightColG, rightColB)
     }
     if(nextHoleTimer > 0){
       // calculate scale and position based on time left to hole snapshot
@@ -445,10 +454,11 @@ function createTempScoreText(position){
   }).catch(e => console.error(`Oops: ${e}`));
 }
 
-function drawScoreText(pose, score){
+function drawScoreText(pose, score, r, g, b){
   var textPos = topCenterPose(pose)
   // console.log("drawing score text "+score+" "+JSON.stringify(textPos))
   textSize(32);
+  fill(r, g, b)
   text(score+"", textPos[0], textPos[1], 70, 80);
 }
 
@@ -467,10 +477,10 @@ function endGame(){
     postGame.appendChild(img);
   }
   var leftScoreEle = document.getElementById("scoreL");
-  leftScoreEle.innerHTML = "Left: "+scoreLeft
+  leftScoreEle.innerHTML = "Red: "+scoreLeft
 
   var rightScoreEle = document.getElementById("scoreR");
-  rightScoreEle.innerHTML = "Right: "+scoreRight
+  rightScoreEle.innerHTML = "Blue: "+scoreRight
 
   postGame.style.display = "";
 }
