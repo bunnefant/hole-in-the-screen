@@ -42,14 +42,14 @@ function getHoleInScreen(completion) {
 		});
 }
 
-function drawHoleInScreen(translated, pose) {
+function drawHoleInScreen(translated, pose, r, g, b) {
   // console.log(translated)
   // Loop through all the skeletons detected
 	 let skeleton = translated;
 	 if (skeleton.length == 0) {
 	   return;
 	 }
-	 fill(255, 0, 0, 100);
+	 fill(r, g, b, 100);
 	 //rect(0, 0, 640, 480);
 	 let torso = {};
    for (let j = 0; j < skeleton.length; j++) {
@@ -75,7 +75,7 @@ function drawHoleInScreen(translated, pose) {
 		 }
 		 //draw limbs
 		 strokeWeight(20);
-	   stroke(255, 0, 0, 100);
+	   stroke(r, g, b, 100);
      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
    }
 	 //draw torso polygon

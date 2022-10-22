@@ -93,7 +93,7 @@ function updatedPoseSingleplayer(poses){
 
     console.log("rand center", cX, cY)
     var changes = transformPoseToCenter(holePose.pose, cX, cY, 1)
-    var newLeftPose = createBodyObjectTransformed(leftPose, changes[1], changes[2])
+    var newLeftPose = createBodyObjectTransformed(holePose.pose, changes[1], changes[2])
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
 
     bGenerateNewHole = false;
@@ -172,13 +172,20 @@ function updatedPoseMultiplayer(poses){
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
 
-    var cX = getRandomInt(500)+100
-    var cY = getRandomInt(500)+100
+    var cXL = getRandomInt(canvasWidth*0.4)+canvasWidth*0.2
+    var cYL = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
 
-    var changes = transformPoseToCenter(holePose.pose, cX, cY, 1)
-    var newLeftPose = createBodyObjectTransformed(leftPose, changes[1], changes[2])
+    var cXR = getRandomInt(canvasWidth*0.2)+canvasWidth*0.5
+    var cYR = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
+
+    var changesL = transformPoseToCenter(holePose.pose, cXL, cYL, 1)
+    var newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])
+    
+    var changesR = transformPoseToCenter(holePose.pose, cXR, cYR, 1)
+    var newRightPose = createBodyObjectTransformed(holePose.pose, changesR[1], changesR[2])
+
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
-    rightTrans = calcSkeletonTranslation(rightPose, holePose.pose, holePose.skeleton)
+    rightTrans = calcSkeletonTranslation(newRightPose, holePose.pose, holePose.skeleton)
     console.log("left and right trans ")
     // now change the hole pose itself for score calculations
 
@@ -296,11 +303,11 @@ function drawInverted(){
   if(gameStarted && !gameEnded){
     if(leftTrans != null){
       // console.log("draw left hole")
-      drawHoleInScreen(leftTrans, leftPose)
+      drawHoleInScreen(leftTrans, leftPose, 255, 0, 0)
     }
     if(rightTrans != null){
       // console.log("draw right hole")
-      drawHoleInScreen(rightTrans, rightPose)
+      drawHoleInScreen(rightTrans, rightPose, 0, 0, 255)
     }
   }
 }
@@ -459,6 +466,12 @@ function endGame(){
     img.src = imgURI;
     postGame.appendChild(img);
   }
+  var leftScoreEle = document.getElementById("scoreL");
+  leftScoreEle.innerHTML = "Left: "+scoreLeft
+
+  var rightScoreEle = document.getElementById("scoreR");
+  rightScoreEle.innerHTML = "Right: "+scoreRight
+
   postGame.style.display = "";
 }
 
@@ -469,6 +482,9 @@ function resetToStarting(){
   gameStarted = false;
   showCountdown = false;
   currentHoleIndex = 0;
+
+  flippedDrawCallbacks = []
+  drawCallbacks = []
   showStartingOptions()
 
 }
