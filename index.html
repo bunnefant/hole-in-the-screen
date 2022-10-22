@@ -5,15 +5,46 @@
 </head>
 
 <body>
+  <canvas id="left"></canvas>
+  <canvas id="right"></canvas>
+
+  <video autoplay="true" id="videoElement">
+
+  </video>
   <!-- Your code must be inside body as it applies classes to it -->
   <script>
     // Let's use handtracking and show the webcam feed with wireframes
-    const handsfree = new Handsfree({showDebug: true, hands: true, pose: true})
-    handsfree.start()
+    var video = document.querySelector("#videoElement");
+    // get left canvas ctx
+    var lctx = document.querySelector("#left").getContext('2d');
+    var rctx = document.querySelector("#right").getContext('2d');
 
-    // Create a plugin named "logger" to show data on every frame
-    handsfree.use('logger', data => {
-      console.log(data.hands)
-    })
+
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+          video.srcObject = stream;
+
+          
+
+          var videoEl = {width: 1280, height:800}
+          videoEl.$el = video;
+          var setup = {
+            video: videoEl
+          }
+          const handsfree = new Handsfree({pose: true, setup: setup})
+          handsfree.start()
+
+          // Create a plugin named "logger" to show data on every frame
+          handsfree.use('logger', data => {
+            console.log(data.pose)
+          })
+        })
+        .catch(function (err0r) {
+          console.log("Something went wrong!", err0r);
+        });
+    }
+
+    
   </script>
 </body>
