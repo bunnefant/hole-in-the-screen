@@ -13,6 +13,11 @@ let poseNet;
 let poses = [];
 let	holeScale = 100;
 let holePose = [];
+let playerCenter = [0, 0];
+let poseHoleCenter = [0, 0];
+let poseTranslation = [0,0];
+let translatedPoseSkeleton = [];
+let posePlayerScale = 1.0;
 
 var allPoses = {}
 var poseUpdatedCallbacks = []
@@ -26,7 +31,7 @@ function getHoleInScreen(completion) {
 		.then(resp => resp.json())
 		.then(data => {
       allPoses = data;
-			holePose = data.pose1.skeleton;
+			holePose = data.pose1;
 
       testHolePose1 = data.pose1.pose;
       // testHolePose2 = data.pose2.pose;
@@ -37,7 +42,7 @@ function getHoleInScreen(completion) {
 
 function drawHoleInScreen() {
   // Loop through all the skeletons detected
-	 let skeleton = holePose.skeleton ? holePose.skeleton : [];
+	 let skeleton = translatedPoseSkeleton;
 	 if (skeleton.length == 0) {
 	   return;
 	 }
@@ -57,6 +62,7 @@ function drawHoleInScreen() {
 			 continue;
 		 }
 		 if (partA.part == 'leftShoulder' && partB.part == 'rightShoulder') {
+
 		   torso.rightShoulder = partB.position;
 			 continue;
 		 }
@@ -79,12 +85,16 @@ function drawHoleInScreen() {
 	 endShape(CLOSE);
 	 
 	 //draw head
-	 let leftEar = holePose.pose.leftEar;
-	 let rightEar = holePose.pose.rightEar;
+	 let leftEar = poses[0].pose.leftEar;
+	 let rightEar = poses[0].pose.rightEar;
 
-	 let nose = holePose.pose.nose;
-	 let diameter = Math.sqrt((leftEar.x - rightEar.x)**2 + (leftEar.y - rightEar.y)**2);
+	 let nose = poses[0].pose.nose;
+	 let diameter = euclidDist(leftEar.x, leftEar.y, rightEar.x, rightEar.y);
 	 circle(nose.x, nose.y, diameter);
+}
+
+function euclidDist(x1, y1, x2, y2) {
+  return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2);
 }
 
 function setup() {
@@ -104,8 +114,9 @@ function setup() {
       poseUpdatedCallbacks[i](poses);
     }
 
-		if (poses.length == 2) {
-			// console.log(poses);
+		if (poses.length > 0) {
+			//console.log(poses);
+		  poseTranslation = calcSkeletonTranslation(poses[0].pose, holePose.pose, holePose.skeleton);
 		}
   });
   // Hide the video element, and just show the canvas
@@ -114,6 +125,83 @@ function setup() {
   });
   video.hide();
   moveCanvasToChild();
+}
+
+function calcSkeletonTranslation(player, pose, skeleton) {
+	if (pose) {
+		playerCenter = lineIntersection(player.leftShoulder, player.rightHip, player.leftHip, player.rightShoulder);
+		poseHoleCenter = lineIntersection(pose.leftShoulder, pose.rightHip, pose.leftHip, pose.rightShoulder);
+		if (!playerCenter || !poseHoleCenter) {
+			return;
+		}
+
+		console.log(playerCenter);
+		console.log(poseHoleCenter);
+		let xTrans = playerCenter[0] - poseHoleCenter[0];
+		let yTrans = playerCenter[1] - poseHoleCenter[1];
+		
+		let playerCenterDist = euclidDist(playerCenter[0], playerCenter[1], player.rightShoulder.x, player.rightShoulder.y);
+		let poseCenterDist = euclidDist(poseHoleCenter[0], poseHoleCenter[1], pose.rightShoulder.x, pose.rightShoulder.y);
+		posePlayerScale = playerCenterDist/poseCenterDist;
+
+		translatedPoseSkeleton = [];
+		for (let j = 0; j < skeleton.length; j++) {
+
+			let pointA = skeleton[j][0].position;
+			let pointB = skeleton[j][1].position;
+
+			let magA = euclidDist(pointA.x, pointA.y, poseHoleCenter[0], poseHoleCenter[1]);
+			let vectorA = [(pointA.x - poseHoleCenter[0]), (pointA.y - poseHoleCenter[1])]
+
+			let magB = euclidDist(pointB.x, pointB.y, poseHoleCenter[0], poseHoleCenter[1]);
+			let vectorB = [(pointB.x - poseHoleCenter[0]), (pointB.y - poseHoleCenter[1])]
+
+			translatedPoseSkeleton.push([
+				{
+				 part: skeleton[j][0].part,
+				 position: {
+					 x: (poseHoleCenter[0] + xTrans) + (vectorA[0] * posePlayerScale),
+					 y: (poseHoleCenter[1] + yTrans) + (vectorA[1] * posePlayerScale)
+				 },
+				 score: skeleton[j][0].score
+				},
+				{
+				 part: skeleton[j][1].part,
+				 position: {
+					 x: (poseHoleCenter[0] + xTrans) + (vectorB[0] * posePlayerScale),
+					 y: (poseHoleCenter[1] + yTrans) + (vectorB[1] * posePlayerScale)
+				 },
+				 score: skeleton[j][0].score
+				}
+			]);
+		}
+	}
+}
+
+function lineIntersection(pointA, pointB, pointC, pointD) {
+  var z1 = (pointA.x - pointB.x);
+  var z2 = (pointC.x - pointD.x);
+  var z3 = (pointA.y - pointB.y);
+  var z4 = (pointC.y - pointD.y);
+  var dist = z1 * z4 - z3 * z2;
+  if (dist == 0) {
+    return null;
+  }
+  var tempA = (pointA.x * pointB.y - pointA.y * pointB.x);
+  var tempB = (pointC.x * pointD.y - pointC.y * pointD.x);
+  var xCoor = (tempA * z2 - z1 * tempB) / dist;
+  var yCoor = (tempA * z4 - z3 * tempB) / dist;
+
+  if (xCoor < Math.min(pointA.x, pointB.x) || xCoor > Math.max(pointA.x, pointB.x) ||
+    xCoor < Math.min(pointC.x, pointD.x) || xCoor > Math.max(pointC.x, pointD.x)) {
+    return null;
+  }
+  if (yCoor < Math.min(pointA.y, pointB.y) || yCoor > Math.max(pointA.y, pointB.y) ||
+    yCoor < Math.min(pointC.y, pointD.y) || yCoor > Math.max(pointC.y, pointD.y)) {
+    return null;
+  }
+
+  return [xCoor, yCoor];
 }
 
 function moveCanvasToChild(){
@@ -156,6 +244,11 @@ function drawKeypoints()  {
       }
     }
   }
+	if (playerCenter) {
+		fill(0, 255, 0);
+		noStroke();
+		ellipse(playerCenter[0], playerCenter[1], 10, 10);
+	}
 }
 
 // A function to draw the skeletons
