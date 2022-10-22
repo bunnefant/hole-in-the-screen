@@ -215,6 +215,7 @@ function resetToStarting(){
   countdownStarted = false;
   gameStarted = false;
   showCountdown = false;
+  currentHoleIndex = 0;
   showStartingOptions()
 
 }
