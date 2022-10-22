@@ -1,0 +1,4 @@
+#container{position:relative;border:1px solid gold;width:800px;height:400px;}
+.part{position:absolute;}
+#left{left:0;border:1px solid green;}
+#right{left:500px;border:1px solid blue;};  

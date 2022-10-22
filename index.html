@@ -1,42 +1,74 @@
 <head>
   <!-- Include Handsfree.js -->
   <link rel="stylesheet" href="https://unpkg.com/handsfree@8.5.1/build/lib/assets/handsfree.css" />
+  <link rel="stylesheet" href="index.css"/>
   <script src="https://unpkg.com/handsfree@8.5.1/build/lib/handsfree.js"></script>
 </head>
 
 <body>
-  <canvas id="left"></canvas>
-  <canvas id="right"></canvas>
+  <div id="container">
+    <canvas style="position:absolute" width="1280" height="800" id="left"></canvas>
+    <canvas style="position:absolute" width="900" height="600" id="right"></canvas>
+</div>
+  <video style="display:none" autoplay="true" id="videoElement"></video>
+  <video style="display:none" autoplay="true" id="videoLeft"></video>
+  <video style="display:none" autoplay="true" id="videoRight"></video>
 
-  <video autoplay="true" id="videoElement">
-
-  </video>
   <!-- Your code must be inside body as it applies classes to it -->
   <script>
     // Let's use handtracking and show the webcam feed with wireframes
     var video = document.querySelector("#videoElement");
-    // get left canvas ctx
-    var lctx = document.querySelector("#left").getContext('2d');
-    var rctx = document.querySelector("#right").getContext('2d');
+    var videoL = document.querySelector("#videoLeft");
+    var videoR = document.querySelector("#videoRight");
 
+    // get left canvas ctx
+    var lcanvas = document.querySelector("#left")
+    var rcanvas = document.querySelector("#right")
+
+    var lctx = lcanvas.getContext('2d');
+    var rctx = rcanvas.getContext('2d');
+
+    lcanvas.$play = rcanvas.$play = function(){
+
+    };
 
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(function (stream) {
           video.srcObject = stream;
-
           
+          var $this = this; //cache
+          (function loop() {
+              lctx.drawImage(video, 0, 0, video.videoWidth/2, video.videoHeight, 0, 0, video.videoWidth/2, video.videoHeight);
+              rctx.drawImage(video, video.videoWidth/2, 0, video.videoWidth/2, video.videoHeight, video.videoWidth/2, 0, video.videoWidth/2, video.videoHeight);
+              setTimeout(loop, 1000 / 30); // drawing at 30fps
+          })();
 
           var videoEl = {width: 1280, height:800}
-          videoEl.$el = video;
+
+          videoL.srcObject = lcanvas.captureStream(30)
+          videoEl.$el = videoL;
           var setup = {
             video: videoEl
           }
-          const handsfree = new Handsfree({pose: true, setup: setup})
+          const handsfree = new Handsfree({setup: setup, pose: true})
           handsfree.start()
 
+          var videoEl2 = {width: 1280, height:800}
+
+          videoR.srcObject = rcanvas.captureStream(30)
+          videoEl2.$el = videoR;
+          var setup2 = {
+            video: videoEl2
+          }
+          const handsfree2 = new Handsfree({showDebug: true, setup: setup2, pose: true})
+          handsfree2.start()
+
           // Create a plugin named "logger" to show data on every frame
-          handsfree.use('logger', data => {
+          // handsfree.use('logger', data => {
+          //   console.log(data.pose)
+          // })
+          handsfree2.use('logger', data => {
             console.log(data.pose)
           })
         })
