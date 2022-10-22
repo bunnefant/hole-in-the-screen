@@ -1,6 +1,7 @@
 var gameCanvas;
 
 var isMultiplayer = false;
+var countdownStarted = false;
 var gameStarted = false;
 
 var lastUpdate = Date.now();
@@ -10,6 +11,9 @@ var countdownTimer = 3000; // in ms
 
 const POSE_ACCEPTANCE_THRESHOLD = 0.3
 
+var songFileToPlay = ""
+var songPosesToShow = []
+
 function startLocalMultiplayer(){
   var gameDiv = document.getElementById("game");
   gameDiv.style.display = "";
@@ -18,6 +22,8 @@ function startLocalMultiplayer(){
   
   poseUpdatedCallbacks.push(updatedPoseMultiplayer)
   drawCallbacks.push(drawGame)
+
+  getSongData()
 }
 
 function startLocalSingleplayer(){
@@ -28,6 +34,8 @@ function startLocalSingleplayer(){
   
   poseUpdatedCallbacks.push(updatedPoseSingleplayer)
   drawCallbacks.push(drawGame)
+
+  getSongData()
 }
 
 function updatedPoseSingleplayer(poses){
@@ -45,7 +53,7 @@ function updatedPoseSingleplayer(poses){
     return
   }
 
-  if(gameStarted){
+  if(gameStarted || countdownStarted){
     return
   }
   
@@ -54,7 +62,14 @@ function updatedPoseSingleplayer(poses){
   // setTimeout(beginGame, 3000)
   showCountdown = true;
   countdownTimer = 3000;
-  gameStarted = true;
+  countdownStarted = true;
+}
+
+function getSongData(){
+  var songData = getSongDataForGame();
+
+  songFileToPlay = songData[0]
+  songPosesToShow = songData[1]
 }
 
 function updatedPoseMultiplayer(poses){
@@ -80,7 +95,7 @@ function updatedPoseMultiplayer(poses){
     return
   }
   
-  if(gameStarted){
+  if(gameStarted || countdownStarted){
     return
   }
   
@@ -88,11 +103,17 @@ function updatedPoseMultiplayer(poses){
   // setTimeout(beginGame, 3000)
   showCountdown = true;
   countdownTimer = 3000;
-  gameStarted = true;
+  countdownStarted = true;
 }
 
 function beginGame(){
-  console.log("GAME ACTUALLY STARTING")
+  console.log("GAME ACTUALLY STARTING song: "+songFileToPlay)
+  // expectation: song file and poses are loaded by this point
+
+  // play the song
+  new Audio(songFileToPlay).play()
+
+
 }
 
 function drawGame(){
@@ -107,8 +128,12 @@ function drawGame(){
     countdownTimer -= dt;
   }
   if(countdownTimer <= 0){
-    beginGame();
+    if(!gameStarted){
+      beginGame();
+      gameStarted = true;
+    }
     showCountdown = false;
+    countdownStarted = false;
   }
 
 }

@@ -14,6 +14,7 @@ let poses = [];
 let	holeScale = 100;
 let holePose = [];
 
+var allPoses = {}
 var poseUpdatedCallbacks = []
 var drawCallbacks = []
 
@@ -24,7 +25,8 @@ function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
 		.then(resp => resp.json())
 		.then(data => {
-			holePose = data.pose1;
+      allPoses = data;
+			holePose = data.pose1.skeleton;
 
       testHolePose1 = data.pose1.pose;
       // testHolePose2 = data.pose2.pose;
@@ -103,7 +105,7 @@ function setup() {
     }
 
 		if (poses.length == 2) {
-			console.log(poses);
+			// console.log(poses);
 		}
   });
   // Hide the video element, and just show the canvas
