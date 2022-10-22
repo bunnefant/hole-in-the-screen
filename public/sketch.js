@@ -11,6 +11,21 @@ PoseNet example using p5.js
 let video;
 let poseNet;
 let poses = [];
+let	holeScale = 100;
+let holePose;
+
+function getHoleInScreen() {
+	fetch('screenHoles.json')
+		.then(resp => resp.json())
+		.then(data => {
+			holePose = data.pose1;
+		});
+}
+
+
+function drawHoleInScreen() {
+	return 0;
+}
 
 function setup() {
   createCanvas(640, 480);
@@ -23,8 +38,12 @@ function setup() {
   // with an array every time new poses are detected
   poseNet.on('pose', function(results) {
     poses = results;
+		if (poses.length == 2) {
+			console.log(poses);
+		}
   });
   // Hide the video element, and just show the canvas
+	getHoleInScreen();
   video.hide();
 }
 
