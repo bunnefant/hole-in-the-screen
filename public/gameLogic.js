@@ -60,6 +60,10 @@ function startLocalSingleplayer(){
 
 function updatedPoseSingleplayer(poses){
   console.log(poses)
+  if(poses.length == 0){
+    leftPose = null;
+    return;
+  }
   var pose1 = poses[0].pose
 
   leftPose = pose1;
@@ -99,6 +103,8 @@ function updatedPoseMultiplayer(poses){
   // console.log(poses)
 
   if(isMultiplayer && poses.length < 2){
+    rightPose = null;
+    leftPose = null;
     return;
   }
 
@@ -219,8 +225,9 @@ function drawGame(){
     }
     if(nextHoleTimer > 0){
       // calculate scale and position based on time left to hole snapshot
+      // visual only
 
-      // calculate score of players
+      
 
       nextHoleTimer -= dt
     }
@@ -230,6 +237,40 @@ function drawGame(){
       takeSnapshot();
 
       // createTempScoreText();
+
+      // calculate score of players
+      // TODO check score of total pose and discount bad poses
+      
+
+      // no null check for hole since it should always exist
+      var holePoseName = songPosesToShow[currentHoleIndex].pose;
+      var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+      // console.log(allPoses, songPosesToShow, currentHoleIndex)
+      console.log(holeNorm, holePoseName, allPoses)
+
+      var rightNorm;
+      var comparisonRight;
+
+      var leftNorm;
+      var comparisonLeft;
+      if(leftPose != null){
+        leftNorm = normalizePose(leftPose.keypoints)
+        comparisonLeft = compareTwoNormalizedPoses(leftNorm, holeNorm)
+      }
+      if(isMultiplayer && rightPose != null){
+        rightNorm = normalizePose(rightPose.keypoints)
+        comparisonRight = compareTwoNormalizedPoses(rightNorm, holeNorm)
+      }
+
+
+      if(comparisonLeft != undefined){
+        scoreLeft += scoreFromAccuracy(comparisonLeft[0]);
+      }
+      if(comparisonRight != undefined){
+        scoreRight += scoreFromAccuracy(comparisonRight[0]);
+      }
+
+      console.log(comparisonLeft, comparisonRight)
 
       // set timer
       nextHoleTimer = songPosesToShow[currentHoleIndex].timeToNext;
@@ -247,7 +288,10 @@ function drawGame(){
   if(gameEnded){
 
   }
+}
 
+function scoreFromAccuracy(acc){
+  return Math.round(acc * 10000) / 100
 }
 
 function createTempScoreText(position){
