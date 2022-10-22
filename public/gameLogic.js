@@ -157,8 +157,8 @@ function updatedPoseMultiplayer(poses){
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
     leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
-    rightTrans = calcSkeletonTranslation(rightPose.pose, holePose.pose, holePose.skeleton)
-    console.log("left and right trans")
+    rightTrans = calcSkeletonTranslation(rightPose, holePose.pose, holePose.skeleton)
+    console.log("left and right trans ")
   }else{
     leftTrans = null;
     rightTrans = null;

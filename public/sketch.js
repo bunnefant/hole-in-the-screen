@@ -39,7 +39,6 @@ function getHoleInScreen(completion) {
 }
 
 function drawHoleInScreen(translated, pose) {
-
   console.log(translated)
   // Loop through all the skeletons detected
 	 let skeleton = translated;
