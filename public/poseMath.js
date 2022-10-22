@@ -120,3 +120,57 @@ function compareTwoNormalizedPoses(player, hole){
   var percentOfCorrectBodyParts = numOfBodyPartsCorrect / numOfBodyPartsCompared
   return [percentOfCorrectBodyParts, wrongBodyParts]
 }
+
+function transformPoseToCenter(pose, newCenterX, newCenterY, scale){
+  var keypoints = pose.keypoints;
+  var xValsArray = []
+  var yValsArray = []
+  for (var i = 0; i < keypoints.length; i++) {
+      xValsArray.push(keypoints[i].position.x);
+      yValsArray.push(keypoints[i].position.y);
+  }
+
+  var minYVal = Math.min(...yValsArray);
+  var minXVal = Math.min(...xValsArray);
+
+  var maxYVal = Math.max(...yValsArray);
+  var maxXVal = Math.max(...xValsArray);
+
+  var x_width = maxXVal - minXVal;
+  var y_width = maxYVal - minYVal;
+
+  var centerX = minXVal + x_width/2;
+  var centerY = minYVal + y_width/2;
+
+  // translate all by diff
+  var dx = newCenterX - centerX;
+  var dy = newCenterY - centerY;
+
+  for(var i = 0; i < keypoints.length; i++){
+    keypoints[i].position.x += dx;
+    keypoints[i].position.y += dy;
+  }
+  console.log("dxdy", dx, dy)
+  return [keypoints, dx, dy];
+}
+
+function createBodyObjectTransformed(pose, dx, dy){
+  return {
+    leftHip: {
+      x: pose.leftHip.x + dx,
+      y: pose.leftHip.y + dy,
+    },
+    rightHip: {
+      x: pose.rightHip.x + dx,
+      y: pose.rightHip.y + dy,
+    },
+    leftShoulder: {
+      x: pose.leftShoulder.x + dx,
+      y: pose.leftShoulder.y + dy,
+    },
+    rightShoulder: {
+      x: pose.rightShoulder.x + dx,
+      y: pose.rightShoulder.y + dy,
+    },
+  }
+}

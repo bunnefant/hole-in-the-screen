@@ -21,6 +21,8 @@ var songPosesToShow = []
 var screenshotCanvas = document.createElement('canvas');
 var screenshotData = []
 
+var audioPlayer;
+
 // single player only left pose is used
 var pose1;
 var pose2;
@@ -33,6 +35,8 @@ var rightTrans;
 var scoreLeft = 0;
 var scoreRight = 0;
 
+var bGenerateNewHole = false;
+
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -43,6 +47,7 @@ function startLocalMultiplayer(){
   isMultiplayer = true;
   
   poseUpdatedCallbacks.push(updatedPoseMultiplayer)
+  flippedDrawCallbacks.push(drawInverted)
   drawCallbacks.push(drawGame)
 
   getSongData()
@@ -58,6 +63,7 @@ function startLocalSingleplayer(){
   isMultiplayer = false;
   
   poseUpdatedCallbacks.push(updatedPoseSingleplayer)
+  flippedDrawCallbacks.push(drawInverted)
   drawCallbacks.push(drawGame)
 
   getSongData()
@@ -77,12 +83,21 @@ function updatedPoseSingleplayer(poses){
   // console.log("udpated singleplayer "+JSON.stringify(leftPose))
 
   var holeData = songPosesToShow[currentHoleIndex]
-  if(holeData != null){
+  if(holeData != null && bGenerateNewHole){
     var holePoseName = holeData.pose;
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
-    leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
-  }else{
+      
+    var cX = getRandomInt(canvasWidth*0.5)+canvasWidth*0.25
+    var cY = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
+
+    console.log("rand center", cX, cY)
+    var changes = transformPoseToCenter(holePose.pose, cX, cY, 1)
+    var newLeftPose = createBodyObjectTransformed(leftPose, changes[1], changes[2])
+    leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
+
+    bGenerateNewHole = false;
+  }else if(holeData == null){
     leftTrans = null;
   }
   
@@ -152,14 +167,23 @@ function updatedPoseMultiplayer(poses){
     return
   }
   var holeData = songPosesToShow[currentHoleIndex]
-  if(holeData != null){
+  if(holeData != null && bGenerateNewHole){
     var holePoseName = holeData.pose;
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
-    leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
+
+    var cX = getRandomInt(500)+100
+    var cY = getRandomInt(500)+100
+
+    var changes = transformPoseToCenter(holePose.pose, cX, cY, 1)
+    var newLeftPose = createBodyObjectTransformed(leftPose, changes[1], changes[2])
+    leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
     rightTrans = calcSkeletonTranslation(rightPose, holePose.pose, holePose.skeleton)
     console.log("left and right trans ")
-  }else{
+    // now change the hole pose itself for score calculations
+
+    bGenerateNewHole = false;
+  }else if(holeData == null){
     leftTrans = null;
     rightTrans = null;
   }
@@ -234,9 +258,9 @@ function beginGame(){
   // expectation: song file and poses are loaded by this point
 
   gameStarted = true;
-
+  bGenerateNewHole = true;
   // play the song
-  new Audio(songFileToPlay).play()
+  audioPlayer = new Audio(songFileToPlay).play()
 
 
 }
@@ -251,6 +275,37 @@ function takeSnapshot(){
   screenshotData.push(dataURI)
 }
 
+
+function drawInverted(){
+  if(pose1 != undefined){
+    if(pose1.skeleton != undefined){
+      // console.log("skele 1"+JSON.stringify(pose1.skeleton))
+      drawPose(pose1.skeleton, 10, 255, 10, 10)
+
+    }
+  }
+  if(pose2 != undefined){
+    if(pose2.skeleton != undefined){
+      // console.log("skele 2"+JSON.stringify(pose2.skeleton))
+
+      drawPose(pose2.skeleton, 20, 10, 10, 255)
+
+    }
+  }
+
+  if(gameStarted && !gameEnded){
+    if(leftTrans != null){
+      // console.log("draw left hole")
+      drawHoleInScreen(leftTrans, leftPose)
+    }
+    if(rightTrans != null){
+      // console.log("draw right hole")
+      drawHoleInScreen(rightTrans, rightPose)
+    }
+  }
+}
+
+
 function drawGame(){
   // every frame
   var now = Date.now();
@@ -259,21 +314,7 @@ function drawGame(){
 
   // drawSkeleton();
   // console.log(leftPose)
-  if(pose1 != undefined){
-    if(pose1.skeleton != undefined){
-      console.log("skele 1"+JSON.stringify(pose1.skeleton))
-      drawPose(pose1.skeleton, 10, 255, 10, 10)
-
-    }
-  }
-  if(pose2 != undefined){
-    if(pose2.skeleton != undefined){
-      console.log("skele 2"+JSON.stringify(pose2.skeleton))
-
-      drawPose(pose2.skeleton, 20, 10, 10, 255)
-
-    }
-  }
+  
 
   if(showCountdown && countdownTimer > 0){
     // console.log(countdownTimer, dt)
@@ -290,14 +331,14 @@ function drawGame(){
   }
 
   if(gameStarted && !gameEnded){
-    if(leftTrans != null){
-      console.log("draw left hole")
-      drawHoleInScreen(leftTrans, leftPose)
-    }
-    if(rightTrans != null){
-      console.log("draw right hole")
-      drawHoleInScreen(rightTrans, rightPose)
-    }
+    // if(leftTrans != null){
+    //   // console.log("draw left hole")
+    //   drawHoleInScreen(leftTrans, leftPose)
+    // }
+    // if(rightTrans != null){
+    //   // console.log("draw right hole")
+    //   drawHoleInScreen(rightTrans, rightPose)
+    // }
 
 
     drawScoreText(leftPose, scoreLeft)
@@ -362,6 +403,8 @@ function drawGame(){
         // no more poses
         // end game for now
         endGame();
+      }else{
+        bGenerateNewHole = true;
       }
     }
   }
@@ -370,6 +413,10 @@ function drawGame(){
 
   }
 }
+
+// function generateNewHole(){
+
+// }
 
 function scoreFromAccuracy(acc){
   return Math.round(acc * 1000) / 10
@@ -393,7 +440,7 @@ function createTempScoreText(position){
 
 function drawScoreText(pose, score){
   var textPos = topCenterPose(pose)
-  console.log("drawing score text "+score+" "+JSON.stringify(textPos))
+  // console.log("drawing score text "+score+" "+JSON.stringify(textPos))
   textSize(32);
   text(score+"", textPos[0], textPos[1], 70, 80);
 }
@@ -448,4 +495,8 @@ function checkHandsAboveHead(pose){
   var rightHandValid = rightHand.y < eyeLeft && rightHand.confidence >= HANDS_ABOVE_HEAD_CONFIDENCE_THRESHOLD
 
   return rightHandValid
+}
+
+function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
 }

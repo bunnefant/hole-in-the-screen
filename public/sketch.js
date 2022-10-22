@@ -21,9 +21,13 @@ let posePlayerScale = 1.0;
 var allPoses = {}
 var poseUpdatedCallbacks = []
 var drawCallbacks = []
+var flippedDrawCallbacks = []
 
 let testHolePose1;
 let testHolePose2;
+
+let canvasWidth = 640;
+let canvasHeight = 480;
 
 function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
@@ -39,7 +43,7 @@ function getHoleInScreen(completion) {
 }
 
 function drawHoleInScreen(translated, pose) {
-  console.log(translated)
+  // console.log(translated)
   // Loop through all the skeletons detected
 	 let skeleton = translated;
 	 if (skeleton.length == 0) {
@@ -99,7 +103,7 @@ function euclidDist(x1, y1, x2, y2) {
 }
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas(canvasWidth, canvasHeight);
 
   video = createCapture(VIDEO);
   video.size(width, height);
@@ -122,6 +126,8 @@ function setup() {
   video.hide();
   moveCanvasToChild();
 }
+
+
 
 function calcSkeletonTranslation(player, pose, skeleton) {
 	if (pose != undefined && player != undefined) {
@@ -218,16 +224,26 @@ function modelReady() {
 }
 
 function draw() {
-
+  translate(width,0); // move to far corner
+  scale(-1.0,1.0);
   image(video, 0, 0, width, height);
 
-  // We can call both functions to draw all keypoints and the skeletons
-	// drawHoleInScreen();
+  for(var i = 0; i < flippedDrawCallbacks.length; i++){
+    flippedDrawCallbacks[i]();
+  }
+
+  drawKeypoints();
+  drawSkeleton();
+
+  scale(-1.0,1.0);
+  translate(-width,0); // move to far corner
+
   for(var i = 0; i < drawCallbacks.length; i++){
     drawCallbacks[i]();
   }
-  drawKeypoints();
-  drawSkeleton();
+  // We can call both functions to draw all keypoints and the skeletons
+	// drawHoleInScreen();
+  
 
   
 }
