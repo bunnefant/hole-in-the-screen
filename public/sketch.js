@@ -39,8 +39,8 @@ function getHoleInScreen(completion) {
 		});
 }
 
-
 function drawHoleInScreen() {
+
   // Loop through all the skeletons detected
 	 let skeleton = translatedPoseSkeleton;
 	 if (skeleton.length == 0) {
@@ -207,6 +207,11 @@ function lineIntersection(pointA, pointB, pointC, pointD) {
 function moveCanvasToChild(){
   var parent = document.getElementById("game")
   var canvas = document.getElementById("defaultCanvas0")
+
+  var canvasContext = canvas.getContext('2d');
+  // canvasContext.scale(-1, 1);
+  
+
   parent.appendChild(canvas);
 }
 
@@ -215,6 +220,7 @@ function modelReady() {
 }
 
 function draw() {
+
   image(video, 0, 0, width, height);
 
   // We can call both functions to draw all keypoints and the skeletons

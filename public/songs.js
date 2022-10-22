@@ -2,6 +2,8 @@ const host = "http://localhost:8000"
 function getSongDataForGame(){
   // return a list of poses and time stamps
   var songFilePath = "songs/BangarangSkrillex.mp3"
+  var choices = Object.keys(allPoses)
+  console.log(choices)
   var poses = []
 
   var runningTime = 0;
@@ -10,11 +12,12 @@ function getSongDataForGame(){
     poses.push({
       time: runningTime,
       timeToNext: timeToNext,
-      pose: testHolePose1
+      pose: choices[Math.floor(Math.random()*choices.length)]
     })
 
     runningTime += timeToNext
   }
 
-  return [songFilePath, poses]
+  var firstPoseStartTime = 3000;
+  return [songFilePath, poses, firstPoseStartTime]
 }
