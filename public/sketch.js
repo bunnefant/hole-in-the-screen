@@ -12,19 +12,26 @@ let video;
 let poseNet;
 let poses = [];
 let	holeScale = 100;
-let holePose;
+let holePose = [];
 
 function getHoleInScreen() {
 	fetch('screenHoles.json')
 		.then(resp => resp.json())
 		.then(data => {
-			holePose = data.pose1;
+			holePose = data.pose1.skeleton;
 		});
 }
 
 
 function drawHoleInScreen() {
-	return 0;
+  // Loop through all the skeletons detected
+   for (let j = 0; j < holePose.length; j++) {
+     let partA = holePose[j][0];
+     let partB = holePose[j][1];
+		 strokeWeight(10);
+     stroke(255, 0, 0);
+     line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+   }
 }
 
 function setup() {
@@ -55,6 +62,7 @@ function draw() {
   image(video, 0, 0, width, height);
 
   // We can call both functions to draw all keypoints and the skeletons
+	// drawHoleInScreen();
   drawKeypoints();
   drawSkeleton();
 }
@@ -87,6 +95,7 @@ function drawSkeleton() {
     for (let j = 0; j < skeleton.length; j++) {
       let partA = skeleton[j][0];
       let partB = skeleton[j][1];
+		  strokeWeight(1);
       stroke(255, 0, 0);
       line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
     }
