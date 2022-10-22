@@ -71,11 +71,16 @@ function updatedPoseSingleplayer(poses){
   leftPose = pose1;
   // console.log("udpated singleplayer "+JSON.stringify(leftPose))
 
-  var holePoseName = songPosesToShow[currentHoleIndex].pose;
-  // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
-  var holePose = allPoses[holePoseName]
-  leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
-
+  var holeData = songPosesToShow[currentHoleIndex]
+  if(holeData != null){
+    var holePoseName = holeData.pose;
+    // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+    var holePose = allPoses[holePoseName]
+    leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
+  }else{
+    leftTrans = null;
+  }
+  
   
 
   var poseValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD;
@@ -132,12 +137,18 @@ function updatedPoseMultiplayer(poses){
   leftPose = pose1;
   rightPose = pose2;
 
-  var holePoseName = songPosesToShow[currentHoleIndex].pose;
-  // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
-  var holePose = allPoses[holePoseName]
+  var holeData = songPosesToShow[currentHoleIndex]
+  if(holeData != null){
+    var holePoseName = holeData.pose;
+    // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+    var holePose = allPoses[holePoseName]
+    leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
+    rightTrans = calcSkeletonTranslation(rightPose.pose, holePose.pose, holePose.skeleton)
 
-  leftTrans = calcSkeletonTranslation(leftPose.pose, holePose.pose, holePose.skeleton)
-  rightTrans = calcSkeletonTranslation(rightPose.pose, holePose.pose, holePose.skeleton)
+  }else{
+    leftTrans = null;
+  }
+
 
   var bothPosesValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD && pose2.score > POSE_ACCEPTANCE_THRESHOLD;
   if(!bothPosesValid){
@@ -164,6 +175,9 @@ function updatedPoseMultiplayer(poses){
 
 // try to get nose first, otherwise average
 function xAverageofPoints(pose){
+  if(pose == null){
+    return 0;
+  }
   if(pose["nose"] != undefined && pose["nose"].x != undefined){
     return pose.nose.x
   }
@@ -176,6 +190,9 @@ function xAverageofPoints(pose){
 }
 
 function topCenterPose(pose){
+  if(pose == null){
+    return 0;
+  }
   var x = xAverageofPoints(pose);
   // want lowest bc top of screen is 0
   // try for radius - nose.y, otherwise just highest
@@ -183,7 +200,7 @@ function topCenterPose(pose){
     if(pose["leftEar"] != undefined && pose["leftEar"].x != undefined){
       var dia = Math.max(pose["rightEar"].x, pose["leftEar"].x) - Math.min(pose["rightEar"].x, pose["leftEar"].x)
       if(pose["nose"] != undefined && pose["nose"].x != undefined){
-        return [x, pose.nose.y - dia];
+        return [pose["rightEar"].x-100, pose.nose.y - (dia*1.2)];
       }
     }
   }
@@ -319,7 +336,7 @@ function drawGame(){
 }
 
 function scoreFromAccuracy(acc){
-  return Math.round(acc * 10000) / 100
+  return Math.round(acc * 1000) / 10
 }
 
 function createTempScoreText(position){

@@ -52,15 +52,8 @@ function normalizePose(keypoints){
   return normalizedKeypoints
 }
 
-// function compareTwoNormalizedPoses(keypoints1, keypoints2){
-//   const BODY_PART_VALID_THRESHOLD = 0.50; 
-
-
-
-// }
-
-function compareTwoNormalizedPoses(keypoints1, keypoints2){
-  console.log("Norm "+JSON.stringify(keypoints1))
+function compareTwoNormalizedPoses(player, hole){
+  // console.log("Norm "+JSON.stringify(keypoints1))
   // frame1 = [x1, y1, c1, x2, y2, c2, ...]
   // frame2 = [x1, y1, c1, x2, y2, c2, ...]
 
@@ -78,23 +71,30 @@ function compareTwoNormalizedPoses(keypoints1, keypoints2){
   var numOfBodyPartsCorrect = 0;
 
   var wrongBodyParts = []
-  for(var i = 0; i < keypoints1.length; i ++){
+  for(var i = 0; i < player.length; i ++){
 
-      var f1x = keypoints1[i].position.x
-      var f1y = keypoints1[i].position.y
-      var f1c = keypoints1[i].score
-      var f1p = keypoints1[i].part
+      var f1x = player[i].position.x
+      var f1y = player[i].position.y
+      var f1c = player[i].score
+      var f1p = player[i].part
 
 
-      var f2x = keypoints2[i].position.x
-      var f2y = keypoints2[i].position.y
-      var f2c = keypoints2[i].score
-      var f2p = keypoints2[i].part
+      var f2x = hole[i].position.x
+      var f2y = hole[i].position.y
+      var f2c = hole[i].score
+      var f2p = hole[i].part
 
-      if(f1c > BODY_PART_VALID_THRESHOLD && f2c > BODY_PART_VALID_THRESHOLD){
-        if(f1p != f2p){
-          console.error("PARTS DO NOT MATCH");
-        }
+      if(f1p != f2p){
+        console.error("PARTS DO NOT MATCH");
+        // TODO anything else?
+      }
+
+      if(f2p == "nose" || f2p == "leftEye" || f2p == "rightEye" || f2p == "leftEar" || f2p == "rightEar"){
+        continue;
+      }
+
+      if(f1c > BODY_PART_VALID_THRESHOLD/* && f2c > BODY_PART_VALID_THRESHOLD*/){
+        
           numOfBodyPartsCompared += 1;
 
           // test if the two body parts are close
@@ -108,8 +108,12 @@ function compareTwoNormalizedPoses(keypoints1, keypoints2){
               wrongBodyParts.push(f1p)
           }
       }else{
-          // we are going to assume the model detects most of the body parts so we wont worry about this
+
           console.log("bad body part "+f1c+" "+f2c+" "+f1p)
+          // assume this part doesnt exist on the player, but does exist on the hole, so count it wrong
+          numOfBodyPartsCompared += 1;
+          wrongBodyParts.push(f2p)
+
       }
   }
   console.log(numOfBodyPartsCorrect, numOfBodyPartsCompared)
