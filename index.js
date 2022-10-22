@@ -8,6 +8,7 @@ const host = 'localhost';
 const port = 8000;
 const path = require('path');
 
+app.use(express.static('public'))
 // // Let's enable face tracking with the default Face Pointer
 // const handsfree = new Handsfree({weboji: true})
 // handsfree.enablePlugins('browser')
