@@ -21,6 +21,13 @@ var songPosesToShow = []
 var screenshotCanvas = document.createElement('canvas');
 var screenshotData = []
 
+// single player only left pose is used
+var leftPose;
+var rightPose;
+
+var scoreLeft = 0;
+var scoreRight = 0;
+
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -52,8 +59,10 @@ function startLocalSingleplayer(){
 }
 
 function updatedPoseSingleplayer(poses){
-  // console.log(poses)
+  console.log(poses)
   var pose1 = poses[0].pose
+
+  leftPose = pose1;
   // console.log("udpated singleplayer "+pose1.score)
 
   var poseValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD;
@@ -95,8 +104,17 @@ function updatedPoseMultiplayer(poses){
 
   // guaranteed two poses
 
-  var pose1 = poses[0].pose
-  var pose2 = poses[1].pose
+  var testPose1 = poses[0].pose
+  var testPose2 = poses[1].pose
+
+  var p1X = xAverageofPoints(testPose1)
+  var p2X = xAverageofPoints(testPose2)
+
+  var pose1 = p1X < p2X ? testPose1 : testPose2;
+  var pose2 = p1X >= p2X ? testPose2 : testPose1;
+
+  leftPose = pose1;
+  rightPose = pose2;
 
   var bothPosesValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD && pose2.score > POSE_ACCEPTANCE_THRESHOLD;
   if(!bothPosesValid){
@@ -120,9 +138,44 @@ function updatedPoseMultiplayer(poses){
   countdownStarted = true;
 }
 
+// try to get nose first, otherwise average
+function xAverageofPoints(pose){
+  if(pose["nose"] != undefined && pose["nose"].x != undefined){
+    return pose.nose.x
+  }
+  var x = 0;
+  for(var i = 0; i < pose.keypoints.length; i++){
+    var keypoint = pose.keypoints[i];
+    x += keypoint.position.x;
+  }
+  return x/pose.keypoints.length;
+}
+
+function topCenterPose(pose){
+  var x = xAverageofPoints(pose);
+  // want lowest bc top of screen is 0
+  // try for radius - nose.y, otherwise just highest
+  if(pose["rightEar"] != undefined && pose["rightEar"].x != undefined){
+    if(pose["leftEar"] != undefined && pose["leftEar"].x != undefined){
+      var dia = Math.max(pose["rightEar"].x, pose["leftEar"].x) - Math.min(pose["rightEar"].x, pose["leftEar"].x)
+      if(pose["nose"] != undefined && pose["nose"].x != undefined){
+        return [x, pose.nose.y - dia];
+      }
+    }
+  }
+  var y = 10000;
+  for(var i = 0; i < pose.keypoints.length; i++){
+    var keypoint = pose.keypoints[i];
+    y = Math.min(y, keypoint.position.y);
+  }
+  return [x, y]
+}
+
 function beginGame(){
   console.log("GAME ACTUALLY STARTING song: "+songFileToPlay)
   // expectation: song file and poses are loaded by this point
+
+  gameStarted = true;
 
   // play the song
   new Audio(songFileToPlay).play()
@@ -154,13 +207,16 @@ function drawGame(){
   if(showCountdown && countdownTimer <= 0){
     if(!gameStarted && !gameEnded){
       beginGame();
-      gameStarted = true;
     }
     showCountdown = false;
     countdownStarted = false;
   }
 
   if(gameStarted && !gameEnded){
+    drawScoreText(leftPose, scoreLeft)
+    if(isMultiplayer){
+      drawScoreText(rightPose, scoreRight)
+    }
     if(nextHoleTimer > 0){
       // calculate scale and position based on time left to hole snapshot
 
@@ -172,6 +228,8 @@ function drawGame(){
       // take snapshot
       console.log("taking snapshot")
       takeSnapshot();
+
+      // createTempScoreText();
 
       // set timer
       nextHoleTimer = songPosesToShow[currentHoleIndex].timeToNext;
@@ -190,6 +248,29 @@ function drawGame(){
 
   }
 
+}
+
+function createTempScoreText(position){
+  let initialProps = {
+    text:'+score',
+    color: 'white',
+    size: 30,
+    position: { x: position.x, y: position.y }
+  };
+  var myText = createText(initialProps);
+  myText.animate([
+    { color: 'red', size: 200, duration: 3 }
+  ]).catch(e => console.error(`Oops: ${e}`)).finally(() => {
+    console.log("remove")
+    myText.deleteText();
+  }).catch(e => console.error(`Oops: ${e}`));
+}
+
+function drawScoreText(pose, score){
+  var textPos = topCenterPose(pose)
+  console.log("drawing score text "+score+" "+JSON.stringify(textPos))
+  textSize(32);
+  text(score+"", textPos[0], textPos[1], 70, 80);
 }
 
 function endGame(){
