@@ -34,10 +34,11 @@ function getHoleInScreen(completion) {
 		});
 }
 
-
 function drawHoleInScreen() {
+
   // Loop through all the skeletons detected
 	 let skeleton = holePose.skeleton ? holePose.skeleton : [];
+  //  console.log("draw hole "+JSON.stringify(skeleton))
 	 if (skeleton.length == 0) {
 	   return;
 	 }

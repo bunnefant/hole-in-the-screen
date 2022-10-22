@@ -3,18 +3,28 @@ var gameCanvas;
 var isMultiplayer = false;
 var countdownStarted = false;
 var gameStarted = false;
+var gameEnded = false;
 
 var lastUpdate = Date.now();
 
 var showCountdown = false;
 var countdownTimer = 3000; // in ms
 
+var nextHoleTimer = 1000;
+var currentHoleIndex = 0;
+
 const POSE_ACCEPTANCE_THRESHOLD = 0.3
 
 var songFileToPlay = ""
 var songPosesToShow = []
 
+var screenshotCanvas = document.createElement('canvas');
+var screenshotData = []
+
 function startLocalMultiplayer(){
+  var startingDiv = document.getElementById("startingOption");
+  startingDiv.style.display = "none";
+
   var gameDiv = document.getElementById("game");
   gameDiv.style.display = "";
   gameCanvas = document.getElementById("defaultCanvas0");
@@ -27,6 +37,9 @@ function startLocalMultiplayer(){
 }
 
 function startLocalSingleplayer(){
+  var startingDiv = document.getElementById("startingOption");
+  startingDiv.style.display = "none";
+
   var gameDiv = document.getElementById("game");
   gameDiv.style.display = "";
   gameCanvas = document.getElementById("defaultCanvas0");
@@ -70,6 +83,7 @@ function getSongData(){
 
   songFileToPlay = songData[0]
   songPosesToShow = songData[1]
+  nextHoleTimer = songData[2] // first pose start time
 }
 
 function updatedPoseMultiplayer(poses){
@@ -116,10 +130,20 @@ function beginGame(){
 
 }
 
+function takeSnapshot(){
+  screenshotCanvas.width = 640;
+  screenshotCanvas.height = 480;
+  var ctx = canvas.getContext('2d');
+  console.log(video);
+  ctx.drawImage(video.elt, 0, 0, screenshotCanvas.width, screenshotCanvas.height);
+  var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png'
+  screenshotData.push(dataURI)
+}
+
 function drawGame(){
   // every frame
   var now = Date.now();
-  var dt = ((now - lastUpdate) ) / 1000;
+  var dt = deltaTime;//((now - lastUpdate) ) / 1000;
 
   if(showCountdown && countdownTimer > 0){
     // console.log(countdownTimer, dt)
@@ -127,8 +151,8 @@ function drawGame(){
     text("C "+countdownTimer, 10, 10, 70, 80);
     countdownTimer -= dt;
   }
-  if(countdownTimer <= 0){
-    if(!gameStarted){
+  if(showCountdown && countdownTimer <= 0){
+    if(!gameStarted && !gameEnded){
       beginGame();
       gameStarted = true;
     }
@@ -136,6 +160,72 @@ function drawGame(){
     countdownStarted = false;
   }
 
+  if(gameStarted && !gameEnded){
+    if(nextHoleTimer > 0){
+      // calculate scale and position based on time left to hole snapshot
+
+      // calculate score of players
+
+      nextHoleTimer -= dt
+    }
+    if(nextHoleTimer <= 0){
+      // take snapshot
+      console.log("taking snapshot")
+      takeSnapshot();
+
+      // set timer
+      nextHoleTimer = songPosesToShow[currentHoleIndex].timeToNext;
+      console.log("Next hole "+nextHoleTimer)
+      currentHoleIndex++;
+
+      if(currentHoleIndex >= songPosesToShow.length){
+        // no more poses
+        // end game for now
+        endGame();
+      }
+    }
+  }
+
+  if(gameEnded){
+
+  }
+
+}
+
+function endGame(){
+  gameEnded = true;
+  // hide game
+  var gameDiv = document.getElementById("game");
+  gameDiv.style.display = "none";
+  // gameCanvas = document.getElementById("defaultCanvas0");
+  
+  var postGame = document.getElementById("postGame");
+  for(var i = 0; i < screenshotData.length; i++){
+    var imgURI = screenshotData[i];
+    var img = document.createElement('img')
+    img.src = imgURI;
+    postGame.appendChild(img);
+  }
+  postGame.style.display = "";
+}
+
+function resetToStarting(){
+  gameEnded = false;
+  isMultiplayer = false;
+  countdownStarted = false;
+  gameStarted = false;
+  showCountdown = false;
+  showStartingOptions()
+
+}
+
+function showStartingOptions(){
+  var startingDiv = document.getElementById("startingOption");
+  startingDiv.style.display = "";
+
+  var postGame = document.getElementById("postGame");
+  postGame.innerHTML = ""; // delete images
+  postGame.style.display = "none";
 }
 
 var HANDS_ABOVE_HEAD_CONFIDENCE_THRESHOLD = 0.5
