@@ -37,6 +37,7 @@ function drawHoleInScreen() {
 
 function setup() {
   createCanvas(640, 480);
+
   video = createCapture(VIDEO);
   video.size(width, height);
 
@@ -55,9 +56,13 @@ function setup() {
     console.log(compareTwoNormalizedPoses(normalizePose(testHolePose1), normalizePose(testHolePose2)))
   });
   video.hide();
+  moveCanvasToChild();
+}
 
-
-
+function moveCanvasToChild(){
+  var parent = document.getElementById("game")
+  var canvas = document.getElementById("defaultCanvas0")
+  parent.appendChild(canvas);
 }
 
 function modelReady() {
