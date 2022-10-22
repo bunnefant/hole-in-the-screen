@@ -38,7 +38,7 @@ function getHoleInScreen(completion) {
 		});
 }
 
-function drawHoleInScreen(translated) {
+function drawHoleInScreen(translated, pose) {
 
   console.log(translated)
   // Loop through all the skeletons detected
@@ -85,12 +85,14 @@ function drawHoleInScreen(translated) {
 	 endShape(CLOSE);
 	 
 	 //draw head
-	 let leftEar = poses[0].pose.leftEar;
-	 let rightEar = poses[0].pose.rightEar;
+   if(pose != undefined){
+    let leftEar = pose.leftEar;
+    let rightEar = pose.rightEar;
 
-	 let nose = poses[0].pose.nose;
-	 let diameter = euclidDist(leftEar.x, leftEar.y, rightEar.x, rightEar.y);
-	 circle(nose.x, nose.y, diameter);
+    let nose = pose.nose;
+    let diameter = euclidDist(leftEar.x, leftEar.y, rightEar.x, rightEar.y);
+    circle(nose.x, nose.y, diameter);
+   }
 }
 
 function euclidDist(x1, y1, x2, y2) {
@@ -123,7 +125,7 @@ function setup() {
 }
 
 function calcSkeletonTranslation(player, pose, skeleton) {
-	if (pose) {
+	if (pose != undefined && player != undefined) {
 		playerCenter = lineIntersection(player.leftShoulder, player.rightHip, player.leftHip, player.rightShoulder);
 		poseHoleCenter = lineIntersection(pose.leftShoulder, pose.rightHip, pose.leftHip, pose.rightShoulder);
 		if (!playerCenter || !poseHoleCenter) {
@@ -258,15 +260,22 @@ function drawKeypoints()  {
 // A function to draw the skeletons
 function drawSkeleton() {
   // Loop through all the skeletons detected
-  for (let i = 0; i < poses.length; i++) {
-    let skeleton = poses[i].skeleton;
-    // For every skeleton, loop through all body connections
-    for (let j = 0; j < skeleton.length; j++) {
-      let partA = skeleton[j][0];
-      let partB = skeleton[j][1];
-		  strokeWeight(1);
-      stroke(255, 0, 0);
-      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
-    }
+  // for (let i = 0; i < poses.length; i++) {
+  //   let skeleton = poses[i].skeleton;
+  //   drawPose(skeleton, (i+1)*10, 255, 0, 0)
+  // }
+}
+
+function drawPose(skele, weight, r, g, b){
+  // For every skeleton, loop through all body connections
+  for (let j = 0; j < skele.length; j++) {
+    let partA = skele[j][0];
+    let partB = skele[j][1];
+    strokeWeight(weight);
+    stroke(r, g, b);
+    
+    line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+    noStroke();
+
   }
 }

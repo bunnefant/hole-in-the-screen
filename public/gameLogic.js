@@ -22,6 +22,8 @@ var screenshotCanvas = document.createElement('canvas');
 var screenshotData = []
 
 // single player only left pose is used
+var pose1;
+var pose2;
 var leftPose;
 var rightPose;
 
@@ -63,12 +65,15 @@ function startLocalSingleplayer(){
 
 function updatedPoseSingleplayer(poses){
   if(poses.length == 0){
+    pose1 = null;
+    pose2 = null;
     leftPose = null;
+    rightPose = null;
     return;
   }
-  var pose1 = poses[0].pose
+  pose1 = poses[0]
 
-  leftPose = pose1;
+  leftPose = pose1.pose;
   // console.log("udpated singleplayer "+JSON.stringify(leftPose))
 
   var holeData = songPosesToShow[currentHoleIndex]
@@ -83,11 +88,11 @@ function updatedPoseSingleplayer(poses){
   
   
 
-  var poseValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD;
+  var poseValid = leftPose.score > POSE_ACCEPTANCE_THRESHOLD;
   if(!poseValid){
     return
   }
-  var player1Ready = checkHandsAboveHead(pose1)
+  var player1Ready = checkHandsAboveHead(leftPose)
   
   if(!player1Ready){
     return
@@ -115,28 +120,37 @@ function getSongData(){
 
 function updatedPoseMultiplayer(poses){
   // console.log(poses)
+  pose1 = null;
+  pose2 = null;
+  rightPose = null;
+  leftPose = null;
 
   if(isMultiplayer && poses.length < 2){
-    rightPose = null;
-    leftPose = null;
+    
     return;
   }
 
   // guaranteed two poses
 
-  var testPose1 = poses[0].pose
-  var testPose2 = poses[1].pose
+  var testPose1 = poses[0]
+  var testPose2 = poses[1]
 
+  console.log(testPose1, testPose2)
 
-  var p1X = xAverageofPoints(testPose1)
-  var p2X = xAverageofPoints(testPose2)
+  var p1X = xAverageofPoints(testPose1.pose)
+  var p2X = xAverageofPoints(testPose2.pose)
 
-  var pose1 = p1X < p2X ? testPose1 : testPose2;
-  var pose2 = p1X >= p2X ? testPose2 : testPose1;
+  pose1 = p1X < p2X ? testPose1 : testPose2;
+  pose2 = p1X >= p2X ? testPose1 : testPose2;
 
-  leftPose = pose1;
-  rightPose = pose2;
+  leftPose = pose1.pose;
+  rightPose = pose2.pose;
 
+  var bothPosesValid = leftPose.score > POSE_ACCEPTANCE_THRESHOLD && rightPose.score > POSE_ACCEPTANCE_THRESHOLD;
+  console.log("s1 "+leftPose.score +" s2 "+rightPose.score)
+  if(!bothPosesValid){
+    return
+  }
   var holeData = songPosesToShow[currentHoleIndex]
   if(holeData != null){
     var holePoseName = holeData.pose;
@@ -144,27 +158,26 @@ function updatedPoseMultiplayer(poses){
     var holePose = allPoses[holePoseName]
     leftTrans = calcSkeletonTranslation(leftPose, holePose.pose, holePose.skeleton)
     rightTrans = calcSkeletonTranslation(rightPose.pose, holePose.pose, holePose.skeleton)
-
+    console.log("left and right trans")
   }else{
     leftTrans = null;
+    rightTrans = null;
   }
 
 
-  var bothPosesValid = pose1.score > POSE_ACCEPTANCE_THRESHOLD && pose2.score > POSE_ACCEPTANCE_THRESHOLD;
-  if(!bothPosesValid){
-    return
-  }
-  var player1Ready = checkHandsAboveHead(pose1)
-  var player2Ready = checkHandsAboveHead(pose2)
+  
+  var player1Ready = checkHandsAboveHead(leftPose)
+  var player2Ready = checkHandsAboveHead(rightPose)
   
   console.log("R1 "+player1Ready +" R2"+player2Ready)
+  if(gameStarted || countdownStarted){
+    return
+  }
+  
   if(!(player1Ready && player2Ready)){
     return
   }
   
-  if(gameStarted || countdownStarted){
-    return
-  }
   
   // begin the game
   // setTimeout(beginGame, 3000)
@@ -182,11 +195,15 @@ function xAverageofPoints(pose){
     return pose.nose.x
   }
   var x = 0;
+  var c = 0;
   for(var i = 0; i < pose.keypoints.length; i++){
     var keypoint = pose.keypoints[i];
-    x += keypoint.position.x;
+    if(keypoint.score >= 0.5){
+      x += keypoint.position.x;
+      c++;
+    }
   }
-  return x/pose.keypoints.length;
+  return x/c;
 }
 
 function topCenterPose(pose){
@@ -239,6 +256,25 @@ function drawGame(){
   var now = Date.now();
   var dt = deltaTime;//((now - lastUpdate) ) / 1000;
 
+
+  // drawSkeleton();
+  // console.log(leftPose)
+  if(pose1 != undefined){
+    if(pose1.skeleton != undefined){
+      console.log("skele 1"+JSON.stringify(pose1.skeleton))
+      drawPose(pose1.skeleton, 10, 255, 10, 10)
+
+    }
+  }
+  if(pose2 != undefined){
+    if(pose2.skeleton != undefined){
+      console.log("skele 2"+JSON.stringify(pose2.skeleton))
+
+      drawPose(pose2.skeleton, 20, 10, 10, 255)
+
+    }
+  }
+
   if(showCountdown && countdownTimer > 0){
     // console.log(countdownTimer, dt)
     fill(50);
@@ -255,12 +291,12 @@ function drawGame(){
 
   if(gameStarted && !gameEnded){
     if(leftTrans != null){
-      // console.log("draw left hole")
-      drawHoleInScreen(leftTrans)
+      console.log("draw left hole")
+      drawHoleInScreen(leftTrans, leftPose)
     }
     if(rightTrans != null){
-      // console.log("draw right hole")
-      drawHoleInScreen(rightTrans)
+      console.log("draw right hole")
+      drawHoleInScreen(rightTrans, rightPose)
     }
 
 
