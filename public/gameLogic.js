@@ -59,7 +59,6 @@ function startLocalSingleplayer(){
 }
 
 function updatedPoseSingleplayer(poses){
-  console.log(poses)
   if(poses.length == 0){
     leftPose = null;
     return;

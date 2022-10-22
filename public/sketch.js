@@ -120,6 +120,11 @@ function setup() {
 function moveCanvasToChild(){
   var parent = document.getElementById("game")
   var canvas = document.getElementById("defaultCanvas0")
+
+  var canvasContext = canvas.getContext('2d');
+  // canvasContext.scale(-1, 1);
+  
+
   parent.appendChild(canvas);
 }
 
@@ -128,6 +133,7 @@ function modelReady() {
 }
 
 function draw() {
+
   image(video, 0, 0, width, height);
 
   // We can call both functions to draw all keypoints and the skeletons
