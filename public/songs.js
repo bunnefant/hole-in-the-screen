@@ -2,9 +2,9 @@ const host = "http://localhost:8000"
 function getSongDataForGame(){
   // return a list of poses and time stamps
   const songList = ["BarbieGirl", "BumbleBee", "PinkDinosaur", "Sandstorm"]
-  const songStartTimes = [11000, 17000, 16000, 16500]
-  const songNextTimes = [3600, 3500, 3500, 3600]
-  const randomIndex = Math.floor(Math.random() * songList.length)
+  const songStartTimes = [11000, 17000, 16000, 16550]
+  const songNextTimes = [3600, 3500, 3500, 3550]
+  const randomIndex = 3 //Math.floor(Math.random() * songList.length)
   var songFilePath = "songs/" + songList[randomIndex] + ".mp3"
   var choices = Object.keys(allPoses)
   console.log(choices)
