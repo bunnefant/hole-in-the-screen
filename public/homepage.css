@@ -1,0 +1,145 @@
+body {
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    background-color: #79838b;
+    display: flex;
+    flex-flow: column;
+    position: relative;
+}
+
+.bg {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    max-height: 500px;
+    background-image: url("https://user-images.githubusercontent.com/26748614/96336781-733b6f80-1082-11eb-82a6-9b422f8f91c1.jpg");
+    background-size: contain;
+    background-repeat: repeat-x;
+    background-position: 50% 50%;
+}
+
+.pngLights {
+    position: absolute;
+    z-index: 8;
+    width: 100%;
+    height: 100vh;
+    max-height: 500px;
+    background-image: url("https://user-images.githubusercontent.com/26748614/96336791-759dc980-1082-11eb-85cb-c8761a9a5672.png"), url("https://user-images.githubusercontent.com/26748614/96336777-72a2d900-1082-11eb-9422-8f2ca0a4f302.png"), url("https://user-images.githubusercontent.com/26748614/96336777-72a2d900-1082-11eb-9422-8f2ca0a4f302.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: 50% -22px;
+}
+
+.pngLights.active {
+    background-image: url("https://user-images.githubusercontent.com/26748614/96336791-759dc980-1082-11eb-85cb-c8761a9a5672.png"), url("https://user-images.githubusercontent.com/26748614/96336777-72a2d900-1082-11eb-9422-8f2ca0a4f302.png"), url("");
+}
+
+.cc {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#canvas_container1 {
+    max-height: 500px;
+    z-index: 1;
+}
+
+#canvas_container2 {
+    height: 100vh;
+    z-index: 2;
+}
+
+.floor {
+    flex: 1 1 auto;
+    background-image: url("https://user-images.githubusercontent.com/26748614/96336787-746c9c80-1082-11eb-941f-7846cba8223b.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 0%;
+}
+
+
+/****   Buttons   *****/
+.buttons {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    max-height: 500px;
+}
+
+.btn {
+    position: absolute;
+    bottom: 5%;
+    z-index: 10;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 3px 15px;
+    background-color: #1f1f1f;
+    color: #fdfcfc;
+    -webkit-font-smoothing: antialiased;
+    font-size: 18px;
+    font-family: 'Rajdhani', sans-serif;
+    letter-spacing: 1px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 5px 3px 12px 0px rgba(0, 0, 0, 0.75);
+    transition: color .3s;
+}
+
+.btn_Works {
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: 25% 50%;
+    text-decoration: none;
+}
+
+.btn_Light {
+    left: 5%;
+    /* top: 10%; */
+    transform: translateX(-50%);
+    transform: translate(-50%);
+    transform-origin: 25% 50%;
+    color: #feaeae;
+    text-align:center;
+    shape-rendering: geometricPrecision;
+}
+
+.btn_Works:hover {
+    background-color: #3d3d3d;
+    color: #6286f4;
+}
+
+.btn_Light:hover {
+    background-color: #3d3d3d;
+    color: #da1616;
+}
+
+.btn_Light.blink {
+    animation: blinkAni 500ms;
+}
+
+@keyframes blinkAni {
+    0% {
+        background: #f5f6e4;
+        transform: scale(1) translateX(-50%);
+    }
+    50% {
+        transform: scale(1.2) translateX(-50%);
+    }
+    100% {
+        transform: scale(1) translateX(-50%);
+    }
+}
+
+@media only screen and (max-height: 350px) {
+    .btn {
+        font-size: 4.5vh;
+        bottom: 2%;
+        box-shadow: none;
+        color: #fdfcfc;
+    }
+}

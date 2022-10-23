@@ -1,0 +1,23 @@
+body{
+	margin: 0;
+	padding: 0;
+	font-family: cursive;
+}
+div{
+	box-sizing: border-box;
+}
+.dance-box{
+	width: 500px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-image: url(https://i.pinimg.com/originals/57/e2/09/57e209296e586933febadf06e271a3d3.gif);
+	/*background-image: url(https://i.gifer.com/o8O.gif);*/
+	background-size: contain;
+	background-repeat: no-repeat;
+	font-size: 25px;
+	font-weight: bolder;
+}
