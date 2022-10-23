@@ -45,6 +45,8 @@ var rightColR = 0
 var rightColG = 0
 var rightColB = 255
 
+var endVideo;
+
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -491,7 +493,8 @@ function endGame(){
 
   postGame.style.display = "";
 
-  
+  console.log("CREATING VIDEO FROM END GAME")
+  // createVideo()
 }
 
 function resetToStarting(){
@@ -544,3 +547,87 @@ function getRandomInt(max) {
 // }else if(gameMode == "2"){
 //   startLocalMultiplayer()
 // }
+
+
+function createVideo(){
+  console.log("creating video1")
+
+  endVideo = new Whammy.Video(15);
+  console.log("creating video")
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+var ctx = 0
+   /* main process function */
+   for(var i = 0; i < screenshotData.length; i++){
+
+        var dataUri = screenshotData[i];
+        var img = new Image();
+        //load image and drop into canvas
+        img.onload = function() {
+
+            //a custom fade in and out slideshow
+            context.globalAlpha = 0.2;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.4;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.6;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.8;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);                       
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 1;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+            //this should be a loop based on some user input
+            endVideo.add(context);
+            endVideo.add(context);
+            endVideo.add(context);
+            endVideo.add(context);
+            endVideo.add(context);
+            endVideo.add(context);
+            endVideo.add(context);
+
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.8;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.6;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+            context.clearRect(0,0,context.canvas.width,context.canvas.height);
+            context.globalAlpha = 0.4;
+            context.drawImage(img, 0, 0, canvas.width, canvas.height);
+            endVideo.add(context);
+                  
+            ctx++;
+
+        };
+        img.src = dataUri;
+    }
+    console.log("made video")
+  finalizeVideo()
+}
+
+function finalizeVideo(){
+  //check if its ready
+
+      var start_time = new Date();
+      var output = endVideo.compile();
+      var end_time = new Date();
+      var url = window.webkitURL.createObjectURL(output);
+
+      document.getElementById('awesome').src = url; //toString converts it to a URL via Object URLs, falling back to DataURL
+      document.getElementById('download').style.display = '';
+      document.getElementById('download').href = url;
+      document.getElementById('vidstatus').innerHTML = "Compiled Video in " + (end_time - start_time) + "ms, file size: " + Math.ceil(output.size / 1024) + "KB";
+
+
+}
