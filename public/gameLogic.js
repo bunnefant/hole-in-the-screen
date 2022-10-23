@@ -47,6 +47,17 @@ var rightColB = 255
 
 var endVideo;
 
+var myFont;
+
+// function preload() {
+//   myFont = loadFont('FutilePro.ttf');
+// }
+
+// function setup() {
+//   textAlign(CENTER, CENTER);
+//   textFont(myFont)
+// }
+
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -358,7 +369,11 @@ function drawGame(){
   if(showCountdown && countdownTimer > 0){
     // console.log(countdownTimer, dt)
     fill(50);
-    text("C "+countdownTimer, 10, 10, 70, 80);
+    textSize(64)
+    myFont = loadFont('FutilePro.ttf');
+    textAlign(CENTER, CENTER);
+    textFont(myFont)
+    text("Game will start in " + Math.floor(countdownTimer / 1000 ), width / 2, height / 2);
     countdownTimer -= dt;
   }
   if(showCountdown && countdownTimer <= 0){
