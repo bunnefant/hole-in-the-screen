@@ -4,7 +4,7 @@ function getSongDataForGame(){
   const songList = ["BarbieGirl", "BumbleBee", "PinkDinosaur", "Sandstorm"]
   const songStartTimes = [11000, 17000, 16000, 16550]
   const songNextTimes = [3600, 3500, 3500, 3550]
-  const randomIndex = 3 //Math.floor(Math.random() * songList.length)
+  const randomIndex = Math.floor(Math.random() * songList.length)
   var songFilePath = "songs/" + songList[randomIndex] + ".mp3"
   var choices = Object.keys(allPoses)
   console.log(choices)
