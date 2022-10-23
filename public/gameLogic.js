@@ -45,6 +45,8 @@ var rightColR = 0
 var rightColG = 0
 var rightColB = 255
 
+var updateSinglePlayerHoleCallbacks = []
+var updateSinglePlayerPoseCallbacks = []
 
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
@@ -105,6 +107,10 @@ function updatedPoseSingleplayer(poses){
     var newLeftPose = createBodyObjectTransformed(holePose.pose, changes[1], changes[2])
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
 
+    for(var i = 0; i < updateSinglePlayerHoleCallbacks.length; i++){
+      updateSinglePlayerHoleCallbacks[i](scoreLeft, leftTrans)
+    }
+
     bGenerateNewHole = false;
   }else if(holeData == null){
     leftTrans = null;
@@ -116,6 +122,7 @@ function updatedPoseSingleplayer(poses){
   if(!poseValid){
     return
   }
+
   var player1Ready = checkHandsAboveHead(leftPose)
   
   if(!player1Ready){
@@ -301,7 +308,9 @@ function drawInverted(){
     if(pose1.skeleton != undefined){
       // console.log("skele 1"+JSON.stringify(pose1.skeleton))
       drawPose(pose1.skeleton, 10, leftColR, leftColG, leftColB)
-
+      for(var i = 0; i < updateSinglePlayerPoseCallbacks.length; i++){
+        updateSinglePlayerPoseCallbacks[i](pose1.skeleton, pose1.pose)
+      }
     }
   }
   if(pose2 != undefined){

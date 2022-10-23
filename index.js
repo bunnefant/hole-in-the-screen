@@ -20,16 +20,49 @@ const peer = ExpressPeerServer(server , {
 
 app.use('/peerjs', peer);
 app.use(express.static('public'))
-app.get('/:room' , (req,res)=>{
-    // res.render('index' , {RoomId:req.params.room});
-});
+// app.get('/:room' , (req,res)=>{
+//     // res.render('index' , {RoomId:req.params.room});
+// });
+
+var songDataForRoom = {
+
+}
+
 io.on("connection" , (socket)=>{
+  console.log("Conn "+socket.id)
+
+  var userRoom
   socket.on('newUser' , (id , room)=>{
+    userRoom = room
     socket.join(room);
-    socket.to(room).broadcast.emit('userJoined' , id);
+    if(songDataForRoom[room] != undefined){
+      socket.emit("forceSongData", songDataForRoom[room][0], songDataForRoom[room][1], songDataForRoom[room][2])
+    }
+    socket.to(room).emit('userJoined', id);
     socket.on('disconnect' , ()=>{
-        socket.to(room).broadcast.emit('userDisconnect' , id);
+        socket.to(room).emit('userDisconnect' , id);
     })
+  })
+
+  socket.on('songData', (songFileToPlay, songPosesToShow, nextHoleTimer) => {
+    // received from client
+    if(songDataForRoom[userRoom] == undefined){
+      songDataForRoom[userRoom] = [songFileToPlay, songPosesToShow, nextHoleTimer]
+      console.log("server song", songFileToPlay, songPosesToShow, nextHoleTimer)
+      socket.to(userRoom).emit("forceSongData", songFileToPlay, songPosesToShow, nextHoleTimer)
+    }else{
+      // player trying to override, ignore
+
+    }
+  })
+
+  socket.on("poseAndScore", (obj) => {
+    socket.to(userRoom).emit("poseAndScore", obj)
+  })
+
+  socket.on("skeleton", (obj) => {
+    // console.log()
+    socket.to(userRoom).emit("skeleton", obj)
   })
 })
 app.use(express.static('public'))
@@ -40,7 +73,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '/index.html'));
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
