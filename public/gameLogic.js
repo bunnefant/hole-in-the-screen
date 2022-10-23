@@ -501,7 +501,7 @@ function createTempScoreText(position){
 function drawScoreText(pose, score, r, g, b){
   var textPos = topCenterPose(pose)
   // console.log("drawing score text "+score+" "+JSON.stringify(textPos))
-  textSize(32);
+  textSize(60);
   fill(r, g, b)
   text(score+"", textPos[0], textPos[1], 70, 80);
 }

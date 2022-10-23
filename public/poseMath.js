@@ -71,7 +71,7 @@ function compareTwoNormalizedPoses(player, hole, leftNormX, leftNormY, holeCente
   var dist = euclidDist(leftNormX, leftNormY, holeCenterX, holeCenterY);
   console.log("D "+dist)
   if(dist > 300){
-    return [0, 0]
+    // return [0, 0]
   }
 
   const BODY_PART_VALID_THRESHOLD = 0.50; 
