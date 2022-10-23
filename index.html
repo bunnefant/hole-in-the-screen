@@ -13,8 +13,25 @@
 
 </head>
 
+<body>
+    <!-- <audio autoplay>
+        <source src="songs/aserje.mp3" type="audio/mpeg">
+    </audio> -->
+    <script>
+        var played = false;
+        window.addEventListener("mousemove", function(){
+            if(!played){
+                new Audio("songs/holeinwallintro.mp3").play()
+                played = true;
+            }
+        });
+    </script>
+</body>
+
 <body background="https://is5-ssl.mzstatic.com/image/thumb/J_ffLYCUeZW7B6HdQ-aqtg/1200x675.jpg"
     style="background-size:100% 100%;">
+
+
 
     <div class="launch-button">
         <small>FIRE</small>
