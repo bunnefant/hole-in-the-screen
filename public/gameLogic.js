@@ -98,10 +98,11 @@ function updatedPoseSingleplayer(poses){
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
       
-    var cX = getRandomInt(canvasWidth*0.5)+canvasWidth*0.25
-    var cY = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
+    // TODO use width, height
+    var cX = getRandomInt(width*0.5)+width*0.25
+    var cY = getRandomInt(height*0.5)+height*0.25
 
-    console.log("rand center", cX, cY)
+    console.log("rand center", cX, cY, canvasWidth, canvasHeight, gameCanvas.width, gameCanvas.height)
     var changes = transformPoseToCenter(holePose.pose, cX, cY, 1)
     var newLeftPose = createBodyObjectTransformed(holePose.pose, changes[1], changes[2])
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
@@ -182,11 +183,11 @@ function updatedPoseMultiplayer(poses){
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     var holePose = allPoses[holePoseName]
 
-    var cXL = getRandomInt(canvasWidth*0.4)+canvasWidth*0.2
-    var cYL = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
+    var cXL = getRandomInt(width*0.4)
+    var cYL = getRandomInt(height*0.5)+height*0.25
 
-    var cXR = getRandomInt(canvasWidth*0.2)+canvasWidth*0.5
-    var cYR = getRandomInt(canvasHeight*0.5)+canvasHeight*0.25
+    var cXR = getRandomInt(width*0.4)+width*0.5
+    var cYR = getRandomInt(height*0.5)+height*0.25
 
     var changesL = transformPoseToCenter(holePose.pose, cXL, cYL, 1)
     var newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])

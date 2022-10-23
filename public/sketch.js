@@ -112,7 +112,7 @@ function setup() {
   var asp = smaller * (4/3);
 
   createCanvas(asp, smaller);
-
+  console.log(width, height)
   video = createCapture(VIDEO);
   video.size(width, height);
 
