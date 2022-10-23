@@ -109,7 +109,7 @@ function compareTwoNormalizedPoses(player, hole){
           }
       }else{
 
-          console.log("bad body part "+f1c+" "+f2c+" "+f1p)
+          // console.log("bad body part "+f1c+" "+f2c+" "+f1p)
           // assume this part doesnt exist on the player, but does exist on the hole, so count it wrong
           numOfBodyPartsCompared += 1;
           wrongBodyParts.push(f2p)
