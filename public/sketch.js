@@ -234,6 +234,14 @@ function moveCanvasToChild(){
 
 function modelReady() {
   select('#status').html('Model Loaded');
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const gameMode = urlParams.get('g')
+  if(gameMode == "1"){
+    startLocalSingleplayer()
+  }else if(gameMode == "2"){
+    startLocalMultiplayer()
+  }
 }
 
 function draw() {

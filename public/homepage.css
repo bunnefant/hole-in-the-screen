@@ -90,10 +90,17 @@ body {
     transition: color .3s;
 }
 
+.btn_Right {
+    left: 50%;
+    transform: translateX(0%);
+    transform-origin: 50% 50%;
+    text-decoration: none;
+}
+
 .btn_Works {
     left: 50%;
-    transform: translateX(-50%);
-    transform-origin: 25% 50%;
+    transform: translateX(-100%);
+    transform-origin: 50% 50%;
     text-decoration: none;
 }
 

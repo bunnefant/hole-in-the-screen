@@ -45,7 +45,6 @@ var rightColR = 0
 var rightColG = 0
 var rightColB = 255
 
-
 function startLocalMultiplayer(){
   var startingDiv = document.getElementById("startingOption");
   startingDiv.style.display = "none";
@@ -283,12 +282,14 @@ function beginGame(){
 }
 
 function takeSnapshot(){
+  screenshotCanvas.style.display = "none"
   screenshotCanvas.width = 640;
   screenshotCanvas.height = 480;
-  var ctx = canvas.getContext('2d');
+  var ctx = screenshotCanvas.getContext('2d');
+  // ctx.canvas.hidden = true;
   console.log(video);
   ctx.drawImage(video.elt, 0, 0, screenshotCanvas.width, screenshotCanvas.height);
-  var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png'
+  var dataURI = screenshotCanvas.toDataURL('image/jpeg'); // can also use 'image/png'
   screenshotData.push(dataURI)
 
   let formData = new FormData();
@@ -534,3 +535,12 @@ function checkHandsAboveHead(pose){
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
+// const queryString = window.location.search;
+// const urlParams = new URLSearchParams(queryString);
+// const gameMode = urlParams.get('g')
+// if(gameMode == "1"){
+//   startLocalSingleplayer()
+// }else if(gameMode == "2"){
+//   startLocalMultiplayer()
+// }
