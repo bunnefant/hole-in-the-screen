@@ -479,12 +479,14 @@ function endGame(){
   // gameCanvas = document.getElementById("defaultCanvas0");
   
   var postGame = document.getElementById("postGame");
+	/*
   for(var i = 0; i < screenshotData.length; i++){
     var imgURI = screenshotData[i];
     var img = document.createElement('img')
     img.src = imgURI;
     postGame.appendChild(img);
   }
+	*/
   var leftScoreEle = document.getElementById("scoreL");
   leftScoreEle.innerHTML = "Red: "+scoreLeft
 
@@ -494,13 +496,12 @@ function endGame(){
   postGame.style.display = "";
 
   var gallery = document.getElementById("gallery");
+  var spinner = document.getElementById("spinner");
   for(var i = 0; i < screenshotData.length; i++){
     var imgURI = screenshotData[i];
     var img = document.createElement('img')
     img.src = imgURI;
-    img.setAttribute("data-full", imgURI);
-		img.className = "m-p-g__thumbs-img";
-    gallery.appendChild(img);
+    spinner.appendChild(img);
   }
 	gallery.style.display = "";
   
