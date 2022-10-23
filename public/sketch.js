@@ -88,6 +88,7 @@ function drawHoleInScreen(translated, pose, r, g, b) {
 	 endShape(CLOSE);
 	 
 	 //draw head
+	 /*
    if(pose != undefined){
     let leftEar = pose.leftEar;
     let rightEar = pose.rightEar;
@@ -96,11 +97,10 @@ function drawHoleInScreen(translated, pose, r, g, b) {
     let diameter = euclidDist(leftEar.x, leftEar.y, rightEar.x, rightEar.y);
     circle(nose.x, nose.y, diameter);
    }
+	 */
 }
 
-function euclidDist(x1, y1, x2, y2) {
-  return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2);
-}
+
 
 function setup() {
   canvasWidth = document.body.clientWidth; //document.width is obsolete
@@ -253,8 +253,8 @@ function draw() {
     flippedDrawCallbacks[i]();
   }
 
-  drawKeypoints();
-  drawSkeleton();
+  //drawKeypoints();
+  //drawSkeleton();
 
   scale(-1.0,1.0);
   translate(-width,0); // move to far corner
