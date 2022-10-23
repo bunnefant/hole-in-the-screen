@@ -26,8 +26,8 @@ var flippedDrawCallbacks = []
 let testHolePose1;
 let testHolePose2;
 
-let canvasWidth = 640;
-let canvasHeight = 480;
+let canvasWidth = 1;
+let canvasHeight = 1;
 
 function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
@@ -103,7 +103,13 @@ function euclidDist(x1, y1, x2, y2) {
 }
 
 function setup() {
-  createCanvas(canvasWidth, canvasHeight);
+  canvasWidth = document.body.clientWidth; //document.width is obsolete
+  canvasHeight = document.body.clientHeight; //document.height is obsolete
+
+  var smaller = Math.min(canvasHeight, canvasWidth)
+  var asp = smaller * (4/3);
+
+  createCanvas(asp, smaller);
 
   video = createCapture(VIDEO);
   video.size(width, height);
@@ -214,9 +220,16 @@ function moveCanvasToChild(){
 
   var canvasContext = canvas.getContext('2d');
   // canvasContext.scale(-1, 1);
-  
-
+  // canvas.setAttribute('style', "position: absolute;  left: 50%;margin-left:-400px; top: 50%;margin-top:-300px; border:2px solid blue");
   parent.appendChild(canvas);
+
+  var style = canvas.style;
+  style.marginLeft = "auto";
+  style.marginRight = "auto";
+  var parentStyle = canvas.parentElement.style;
+  parentStyle.textAlign = "center";
+  parentStyle.width = "100%";
+
 }
 
 function modelReady() {
