@@ -397,7 +397,8 @@ function drawGame(){
       // visual only
       
 			fill(0, 0, 0);
-			text(Math.round(nextHoleTimer/1000), 310, 10, 100, 80);
+      textAlign(CENTER, TOP)
+			text("Countdown to next pose:\n" + Math.round(nextHoleTimer/1000), width / 2, 10);
 
       nextHoleTimer -= dt
     }
