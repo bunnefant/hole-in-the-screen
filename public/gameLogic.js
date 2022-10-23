@@ -289,6 +289,10 @@ function takeSnapshot(){
   ctx.drawImage(video.elt, 0, 0, screenshotCanvas.width, screenshotCanvas.height);
   var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png'
   screenshotData.push(dataURI)
+
+  let formData = new FormData();
+  formData.append("file", dataURI);
+  fetch('/upload', {method: "POST", body: formData});
 }
 
 
@@ -483,6 +487,8 @@ function endGame(){
   rightScoreEle.innerHTML = "Blue: "+scoreRight
 
   postGame.style.display = "";
+
+  
 }
 
 function resetToStarting(){

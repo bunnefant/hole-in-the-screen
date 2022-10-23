@@ -7,6 +7,8 @@ const app = express()
 const host = 'localhost';
 const port = 8000;
 const path = require('path');
+const multer  = require('multer')
+var fs = require('fs');
 
 app.use(express.static('public'))
 // // Let's enable face tracking with the default Face Pointer
@@ -66,12 +68,22 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-// Disable all plugins
-// handsfree.disablePlugins()
-// // Enable only the plugins for making music (not actually implemented yet)
-// handsfree.enablePlugins('music')
+var upload = multer({ dest: './uploads' })
 
-// Overwrite our logger to display the original model APIs
-// handsfree.plugin.logger.onFrame = (data) => {
-//   console.log(handsfree.model.pose?.api, handsfree.model.weboji?.api, handsfree.model.pose?.api)
-// }
+app.post(
+  "/upload",
+  upload.single("file" /* name attribute of <file> element in your form */),
+  (req, res) => {
+    // console.log(req)
+    const tempPath = "./d.png";
+    const targetPath = path.join(__dirname, "./uploads/image.png");
+
+    var img = req.body.file;
+    var data = img.replace(/^data:image\/\w+;base64,/, "");
+    var buf = Buffer.from(data, 'base64');
+    fs.writeFile('./uploads/image'+Math.floor(Math.random() * 1000)+'.png', buf, function(){
+
+    });
+
+  }
+);
