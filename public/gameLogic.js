@@ -253,11 +253,12 @@ function topCenterPose(pose){
   var x = xAverageofPoints(pose);
   // want lowest bc top of screen is 0
   // try for radius - nose.y, otherwise just highest
+	
   if(pose["rightEar"] != undefined && pose["rightEar"].x != undefined){
     if(pose["leftEar"] != undefined && pose["leftEar"].x != undefined){
       var dia = Math.max(pose["rightEar"].x, pose["leftEar"].x) - Math.min(pose["rightEar"].x, pose["leftEar"].x)
       if(pose["nose"] != undefined && pose["nose"].x != undefined){
-        return [pose["rightEar"].x-100, pose.nose.y - (dia*1.2)];
+        return [canvasWidth - pose["nose"].x - 10, pose.nose.y - (dia*1.2)];
       }
     }
   }
@@ -368,8 +369,9 @@ function drawGame(){
     if(nextHoleTimer > 0){
       // calculate scale and position based on time left to hole snapshot
       // visual only
-
       
+			fill(0, 0, 0);
+			text(Math.round(nextHoleTimer/1000), 310, 10, 100, 80);
 
       nextHoleTimer -= dt
     }
