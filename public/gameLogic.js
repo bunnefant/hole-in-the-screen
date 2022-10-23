@@ -161,7 +161,7 @@ function updatedPoseMultiplayer(poses){
   var testPose1 = poses[0]
   var testPose2 = poses[1]
 
-  console.log(testPose1, testPose2)
+  // console.log(testPose1, testPose2)
 
   var p1X = xAverageofPoints(testPose1.pose)
   var p2X = xAverageofPoints(testPose2.pose)
@@ -173,27 +173,32 @@ function updatedPoseMultiplayer(poses){
   rightPose = pose2.pose;
 
   var bothPosesValid = leftPose.score > POSE_ACCEPTANCE_THRESHOLD && rightPose.score > POSE_ACCEPTANCE_THRESHOLD;
-  console.log("s1 "+leftPose.score +" s2 "+rightPose.score)
+  // console.log("s1 "+leftPose.score +" s2 "+rightPose.score)
   if(!bothPosesValid){
     return
   }
-  var holeData = songPosesToShow[currentHoleIndex]
+  let holeData = songPosesToShow[currentHoleIndex]
   if(holeData != null && bGenerateNewHole){
     var holePoseName = holeData.pose;
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
-    var holePose = allPoses[holePoseName]
+    const holePose = allPoses[holePoseName]
 
-    var cXL = getRandomInt(width*0.4)
-    var cYL = getRandomInt(height*0.5)+height*0.25
+    let cXL = width*0.25;//getRandomInt(width*0.4)+width*0.1
+    let cYL = height*0.5;//getRandomInt(height*0.5)+height*0.25
 
-    var cXR = getRandomInt(width*0.4)+width*0.5
-    var cYR = getRandomInt(height*0.5)+height*0.25
+    let cXR = width*0.25;//getRandomInt(width*0.4)+width*0.5
+    let cYR = height*0.5;//getRandomInt(height*0.5)+height*0.25
 
-    var changesL = transformPoseToCenter(holePose.pose, cXL, cYL, 1)
-    var newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])
+    // transformPoseToCenter(holePose.pose, 0, 0, 1)
+    // createBodyObjectTransformed(holePose.pose, 0, 0)
     
-    var changesR = transformPoseToCenter(holePose.pose, cXR, cYR, 1)
-    var newRightPose = createBodyObjectTransformed(holePose.pose, changesR[1], changesR[2])
+    let changesL = transformPoseToCenter(holePose.pose, 0, 0, 1)
+    let newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])
+    
+    let changesR = transformPoseToCenter(holePose.pose, 0, 0, 1)
+    let newRightPose = createBodyObjectTransformed(holePose.pose, changesR[1], changesR[2])
+    
+    console.log(changesL, changesR)
 
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
     rightTrans = calcSkeletonTranslation(newRightPose, holePose.pose, holePose.skeleton)
@@ -302,6 +307,15 @@ function takeSnapshot(){
 
 
 function drawInverted(){
+  noFill();
+  stroke(100, 100, 240);
+
+  strokeWeight(10);
+  rect(0, 0, width/2, height)
+  stroke(250, 100, 0);
+
+  rect(width/2, 0, width/2, height)
+
   if(pose1 != undefined){
     if(pose1.skeleton != undefined){
       // console.log("skele 1"+JSON.stringify(pose1.skeleton))
@@ -392,7 +406,11 @@ function drawGame(){
 
       // no null check for hole since it should always exist
       var holePoseName = songPosesToShow[currentHoleIndex].pose;
-      var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
+      var hm = normalizePose(allPoses[holePoseName].pose.keypoints)
+      var holeNorm = hm[0];
+      var holeCenterX = hm[1];
+      var holeCenterY = hm[2];
+
       // console.log(allPoses, songPosesToShow, currentHoleIndex)
       console.log(holeNorm, holePoseName, allPoses)
 
@@ -402,12 +420,20 @@ function drawGame(){
       var leftNorm;
       var comparisonLeft;
       if(leftPose != null){
-        leftNorm = normalizePose(leftPose.keypoints)
-        comparisonLeft = compareTwoNormalizedPoses(leftNorm, holeNorm)
+        var ln = normalizePose(leftPose.keypoints)
+        leftNorm = ln[0]
+        var leftNormX = ln[1];
+        var leftNormY = ln[2];
+
+        comparisonLeft = compareTwoNormalizedPoses(leftNorm, holeNorm, leftNormX, leftNormY, holeCenterX, holeCenterY)
       }
       if(isMultiplayer && rightPose != null){
-        rightNorm = normalizePose(rightPose.keypoints)
-        comparisonRight = compareTwoNormalizedPoses(rightNorm, holeNorm)
+        var rn = normalizePose(rightPose.keypoints)
+        rightNorm = rn[0]
+        var rightNormX = rn[1];
+        var rightNormY = rn[2];
+
+        comparisonRight = compareTwoNormalizedPoses(rightNorm, holeNorm, rightNormX, rightNormY, holeCenterX, holeCenterY)
       }
 
 

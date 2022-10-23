@@ -1,4 +1,8 @@
 
+function euclidDist(x1, y1, x2, y2) {
+  return Math.sqrt((x1 - x2)**2 + (y1 - y2)**2);
+}
+
 function normalizePose(keypoints){
   /* 
   keypoints: {
@@ -15,7 +19,7 @@ function normalizePose(keypoints){
 
   */
 
-  console.log(keypoints)
+  // console.log(keypoints)
 
   var xValsArray = []
   var yValsArray = []
@@ -33,6 +37,9 @@ function normalizePose(keypoints){
   var x_width = maxXVal - minXVal;
   var y_width = maxYVal - minYVal;
 
+  var centerX = minXVal + x_width/2;
+  var centerY = minYVal + y_width/2;
+
   var normalizedKeypoints = []
   for(var i = 0; i < keypoints.length; i++){
     var keypoint = keypoints[i];
@@ -49,10 +56,10 @@ function normalizePose(keypoints){
     })
   }
   // console.log("norm "+JSON.stringify(normalizedKeypoints))
-  return normalizedKeypoints
+  return [normalizedKeypoints, centerX, centerY]
 }
 
-function compareTwoNormalizedPoses(player, hole){
+function compareTwoNormalizedPoses(player, hole, leftNormX, leftNormY, holeCenterX, holeCenterY){
   // console.log("Norm "+JSON.stringify(keypoints1))
   // frame1 = [x1, y1, c1, x2, y2, c2, ...]
   // frame2 = [x1, y1, c1, x2, y2, c2, ...]
@@ -60,6 +67,12 @@ function compareTwoNormalizedPoses(player, hole){
   // return percent of body parts in right place and the body parts that are out of place
   // console.log("F1 "+frame1)
   // console.log("F2 "+frame2)
+
+  var dist = euclidDist(leftNormX, leftNormY, holeCenterX, holeCenterY);
+  console.log("D "+dist)
+  if(dist > 300){
+    return [0, 0]
+  }
 
   const BODY_PART_VALID_THRESHOLD = 0.50; 
 
@@ -122,12 +135,12 @@ function compareTwoNormalizedPoses(player, hole){
 }
 
 function transformPoseToCenter(pose, newCenterX, newCenterY, scale){
-  var keypoints = pose.keypoints;
+  var kp = pose.keypoints;
   var xValsArray = []
   var yValsArray = []
-  for (var i = 0; i < keypoints.length; i++) {
-      xValsArray.push(keypoints[i].position.x);
-      yValsArray.push(keypoints[i].position.y);
+  for (var i = 0; i < kp.length; i++) {
+      xValsArray.push(kp[i].position.x);
+      yValsArray.push(kp[i].position.y);
   }
 
   var minYVal = Math.min(...yValsArray);
@@ -146,12 +159,12 @@ function transformPoseToCenter(pose, newCenterX, newCenterY, scale){
   var dx = newCenterX - centerX;
   var dy = newCenterY - centerY;
 
-  for(var i = 0; i < keypoints.length; i++){
-    keypoints[i].position.x += dx;
-    keypoints[i].position.y += dy;
+  for(var i = 0; i < kp.length; i++){
+    kp[i].position.x += dx;
+    kp[i].position.y += dy;
   }
   console.log("dxdy", dx, dy)
-  return [keypoints, dx, dy];
+  return [kp, dx, dy];
 }
 
 function createBodyObjectTransformed(pose, dx, dy){
