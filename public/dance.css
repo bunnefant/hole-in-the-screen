@@ -1,23 +1,163 @@
 body{
 	margin: 0;
 	padding: 0;
-	font-family: cursive;
+	font-family:fantasy;
 }
 div{
 	box-sizing: border-box;
 }
-.dance-box{
+.dance-box1{
 	width: 500px;
 	position: absolute;
 	top: 50%;
 	left: 50%;
-	transform: translate(-50%,-50%);
+	transform: translate(5%, -110%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	/* background-image: url(https://i.pinimg.com/originals/57/e2/09/57e209296e586933febadf06e271a3d3.gif); */
+	/* background-image: url(https://i.pinimg.com/originals/5a/65/dc/5a65dcc4e4a067fc85e1c85a3d8809d0.gif); */
+	background-image: url(https://i.gifer.com/o8O.gif);
+	background-size: contain;
+	background-repeat: no-repeat;
+	font-size: 20px;
+	font-weight: bolder;
+}
+
+.dance-box2{
+	width: 500px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(+50%,-50%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-image: url(https://i.pinimg.com/originals/57/e2/09/57e209296e586933febadf06e271a3d3.gif);
-	/*background-image: url(https://i.gifer.com/o8O.gif);*/
+	/* background-image: url(https://i.pinimg.com/originals/5a/65/dc/5a65dcc4e4a067fc85e1c85a3d8809d0.gif); */
+	/* background-image: url(https://i.gifer.com/o8O.gif); */
 	background-size: contain;
 	background-repeat: no-repeat;
-	font-size: 25px;
+	font-size: 30px;
 	font-weight: bolder;
+}
+
+.dance-box3{
+	width: 500px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-140%, -10%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	/* background-image: url(https://i.pinimg.com/originals/57/e2/09/57e209296e586933febadf06e271a3d3.gif); */
+	/* background-image: url(https://i.pinimg.com/originals/5a/65/dc/5a65dcc4e4a067fc85e1c85a3d8809d0.gif); */
+	background-image: url(https://media1.giphy.com/media/l1J9OzsBkpWNj5YBO/giphy.gif);
+	background-size: contain;
+	background-repeat: no-repeat;
+	font-family:monospace;
+	font-size: 20px;
+	font-weight: bolder;
+}
+
+
+.launch2{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-140%, -10%);
+}
+
+
+.launch-button{
+	margin: 100px auto;
+	transform: translate(-30%, 190%);
+	width: 80px;
+	height: 180px;
+	position:sticky;
+	background-color: grey;
+	border-radius: 5px;
+	box-shadow: 0px 2px 5px rgba(0,0,0,.3)
+}
+small{
+	display: block;
+	color: white;
+	font-family: sans-serif;
+	text-align: center;
+	font-size: 18px;
+	padding-top: 4px;
+}
+.launch{
+	display: block;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	text-decoration: none;
+	font-size: 40px;
+	color: white;
+	text-shadow: 0px -1px 1px black;
+	font-weight: bold;
+	font-family: sans-serif;
+	line-height: 50px;
+	background-color: rgba(190,0,0,1);
+	border-radius: 100%;
+	position: absolute;
+	top: 110px;
+	left: 15px;
+	box-shadow: 0px 1px 1px black, inset 0px 1px 1px white;
+	transition: all .1s ease-in;
+	-webkit-transition: all .1s ease-in;
+}
+.launch:hover{
+	background-color: rgba(255,0,0,1);
+}
+.cover{
+	display: block;
+	cursor: pointer;
+	position: absolute;
+	top: 90px;
+	left: 10px;
+	width: 60px;
+	height: 80px;
+	border-top: 2px solid #444;
+	background-color: rgba(170,0,0,.9);
+	border-radius: 5px;
+	transform-style: preserve-3d;
+	transition: transform .5s;
+	transform-origin: 0px 0px;
+	-webkit-transform-style: preserve-3d;
+	-webkit-transition: transform .5s;
+	-webkit-transform-origin: 0px 0px;
+	box-shadow: 2px 2px 3px rgba(0,0,0,.2), inset 2px 2px 3px rgba(255,255,255,.3), inset -2px -2px 3px rgba(0,0,0,.1);
+	transition-delay: .5s;
+	-webkit-transition-delay: .5s;
+}
+
+.cover:before{
+	content: "";
+	display: block;
+	width: 10px;
+	height: 3px;
+	background-color: rgba(0,0,0,.5);
+	position: absolute;
+	top: -4px;
+	left: 8px;
+}
+.cover:after{
+	content: "";
+	display: block;
+	width: 10px;
+	height: 3px;
+	background-color: rgba(0,0,0,.5);
+	position: absolute;
+	top: -4px;
+	right: 8px;
+}
+input[type=checkbox] {
+	position: absolute;
+	top: -9999px;
+	left: -9999px;
+}
+input[type=checkbox]:checked ~ label{
+	transform: rotateX( 180deg );
+	-webkit-transform: rotateX( 180deg );
+	box-shadow: 2px -2px 3px rgba(0,0,0,.2), inset 2px -2px 3px rgba(255,255,255,.3), inset -2px 2px 3px rgba(0,0,0,.2);
 }
