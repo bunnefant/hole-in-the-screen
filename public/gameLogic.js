@@ -183,23 +183,23 @@ function updatedPoseMultiplayer(poses){
     // var holeNorm = normalizePose(allPoses[holePoseName].pose.keypoints)
     const holePose = allPoses[holePoseName]
 
-    let cXL = width*0.25;//getRandomInt(width*0.4)+width*0.1
-    let cYL = height*0.5;//getRandomInt(height*0.5)+height*0.25
+    var cXL = getRandomInt(canvasWidth2*0.3)+canvasWidth2*0.8
+    if(cXL < canvasWidth*0.3){
+      cXL = canvasWidth*0.3
+    }
+    var cYL = getRandomInt(canvasHeight2*0.6)+canvasHeight2*0.2
 
-    let cXR = width*0.25;//getRandomInt(width*0.4)+width*0.5
-    let cYR = height*0.5;//getRandomInt(height*0.5)+height*0.25
+    var cXR = getRandomInt(canvasWidth2*0.7)+canvasWidth2*0.2+cXL;//canvasWidth2*0.4
+    var cYR = getRandomInt(canvasHeight2*0.6)+canvasHeight2*0.2
 
-    // transformPoseToCenter(holePose.pose, 0, 0, 1)
-    // createBodyObjectTransformed(holePose.pose, 0, 0)
+    var changesL = transformPoseToCenter(holePose.pose, cXL, cYL, 1)
+    var newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])
     
-    let changesL = transformPoseToCenter(holePose.pose, 0, 0, 1)
-    let newLeftPose = createBodyObjectTransformed(holePose.pose, changesL[1], changesL[2])
-    
-    let changesR = transformPoseToCenter(holePose.pose, 0, 0, 1)
-    let newRightPose = createBodyObjectTransformed(holePose.pose, changesR[1], changesR[2])
-    
-    console.log(changesL, changesR)
+    var changesR = transformPoseToCenter(holePose.pose, cXR, cYR, 1)
+    var newRightPose = createBodyObjectTransformed(holePose.pose, changesR[1], changesR[2])
 
+    console.log(canvasHeight2*0.25, canvasHeight2*0.25 + canvasHeight2*0.5)
+    console.log("cxl ", cXL, cXR)
     leftTrans = calcSkeletonTranslation(newLeftPose, holePose.pose, holePose.skeleton)
     rightTrans = calcSkeletonTranslation(newRightPose, holePose.pose, holePose.skeleton)
     console.log("left and right trans ")

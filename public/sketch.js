@@ -26,8 +26,11 @@ var flippedDrawCallbacks = []
 let testHolePose1;
 let testHolePose2;
 
-let canvasWidth = 1;
-let canvasHeight = 1;
+let canvasWidth2 = 500;
+let canvasHeight2 = 375;
+
+let canvasWidth = 1000;
+let canvasHeight = 750;
 
 function getHoleInScreen(completion) {
 	fetch('screenHoles.json')
@@ -103,13 +106,17 @@ function drawHoleInScreen(translated, pose, r, g, b) {
 
 
 function setup() {
-  canvasWidth = document.body.clientWidth; //document.width is obsolete
-  canvasHeight = document.body.clientHeight; //document.height is obsolete
+  // canvasWidth = document.body.clientWidth; //document.width is obsolete
+  // canvasHeight = document.body.clientHeight; //document.height is obsolete
+  // canvasHeight = 640;
+  // canvasWidth = 480;
 
-  var smaller = Math.min(canvasHeight, canvasWidth)
-  var asp = smaller * (4/3);
+  // var smaller = Math.min(canvasHeight, canvasWidth)
+  // var asp = smaller * (4/3);
 
-  createCanvas(asp, smaller);
+  // createCanvas(asp, smaller);
+
+  createCanvas(canvasWidth, canvasHeight);
   console.log(width, height)
   video = createCapture(VIDEO);
   video.size(width, height);
