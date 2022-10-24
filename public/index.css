@@ -9,3 +9,19 @@
 body { 
   margin: 0;   /* Remove body margins */
 }
+
+.finalCenter {
+  margin: auto;
+  width: 60%;
+  /* border: 5px solid #FFFF00; */
+  padding: 10px;
+}
+
+.red {
+  /* font-family: my; */
+  color:red
+}
+
+.blue {
+  color: blue
+}

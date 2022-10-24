@@ -312,19 +312,19 @@ function takeSnapshot(){
 
 
 function drawInverted(){
-  noFill();
-  stroke(100, 100, 240);
+  // noFill();
+  // stroke(100, 100, 240);
 
-  strokeWeight(10);
-  rect(0, 0, width/2, height)
-  stroke(250, 100, 0);
+  // strokeWeight(10);
+  // rect(0, 0, width/2, height)
+  // stroke(250, 100, 0);
 
-  rect(width/2, 0, width/2, height)
+  // rect(width/2, 0, width/2, height)
 
   if(pose1 != undefined){
     if(pose1.skeleton != undefined){
       // console.log("skele 1"+JSON.stringify(pose1.skeleton))
-      drawPose(pose1.skeleton, 10, leftColR, leftColG, leftColB)
+      drawPose(pose1.skeleton, 20, leftColR, leftColG, leftColB)
 
     }
   }
@@ -480,7 +480,7 @@ function drawGame(){
 // }
 
 function scoreFromAccuracy(acc){
-  return Math.round(acc * 1000) / 10
+  return Math.floor(acc * 100)
 }
 
 function createTempScoreText(position){
